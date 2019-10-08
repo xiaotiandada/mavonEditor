@@ -20,7 +20,7 @@
 ### Install mavon-editor (安装)
 
 ```
-$ npm install mavon-editor --save
+$ npm install mavon-editor-matataki --save
 ```
 
 ### Use (如何引入)

@@ -64,7 +64,7 @@
         <!--帮助文档-->
         <transition name="fade">
             <div ref="help">
-                <div @click="toolbar_right_click('help')" class="v-note-help-wrapper" v-if="s_help">
+                <div class="v-note-help-wrapper" v-if="s_help">
                     <div class="v-note-help-content markdown-body" :class="{'shadow': boxShadow}">
                         <i @click.stop.prevent="toolbar_right_click('help')" class="fa fa-mavon-times"
                            aria-hidden="true"></i>
@@ -447,7 +447,7 @@ export default {
                 if (isinsert === true) {
                     // 去除特殊字符
                     $file._name = $file.name.replace(/[\[\]\(\)\+\{\}&\|\\\*^%$#@\-]/g, '');
-                    
+    
                     $vm.insertText($vm.getTextareaDom(),
                         {
                             prefix: '![' + $file._name + '](' + pos + ')',
@@ -565,7 +565,7 @@ export default {
         // 工具栏插入内容
         insertText(obj, {prefix, subfix, str, type}) {
             // if (this.s_preview_switch) {
-          
+    
             insertTextAtCaret(obj, {prefix, subfix, str, type}, this);
         },
         insertTab() {
