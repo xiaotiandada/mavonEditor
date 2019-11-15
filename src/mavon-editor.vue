@@ -120,6 +120,8 @@ import md_toolbar_left from './components/md-toolbar-left.vue'
 import md_toolbar_right from './components/md-toolbar-right.vue'
 import "./lib/font/css/fontello.css"
 import './lib/css/md.css'
+import debounce from 'lodash/debounce'
+
 export default {
     mixins: [markdown],
     props: {
@@ -626,9 +628,34 @@ export default {
                 console.warn('hljs color scheme', val, 'do not exist, hljs color scheme will not change');
             }
         },
-        iRender(toggleChange) {
+        // iRender(toggleChange) {
+        //     var $vm = this;
+        //     this.$render($vm.d_value, function(res) {
+        //         console.log(res)
+        //         // render
+        //         $vm.d_render = res;
+        //         // change回调  toggleChange == false 时候触发change回调
+        //         if (!toggleChange)
+        //         {
+        //             if ($vm.change) $vm.change($vm.d_value, $vm.d_render);
+        //         }
+        //         // 改变标题导航
+        //         if ($vm.s_navigation) getNavigation($vm, false);
+        //         // v-model 语法糖
+        //         $vm.$emit('input', $vm.d_value)
+        //         // 塞入编辑记录数组
+        //         if ($vm.d_value === $vm.d_history[$vm.d_history_index]) return
+        //         window.clearTimeout($vm.currentTimeout)
+        //         $vm.currentTimeout = setTimeout(() => {
+        //             $vm.saveHistory();
+        //         }, 500);
+        //     })
+        // },
+        // 添加防抖 渲染内容
+        iRender: debounce(function (toggleChange) {
             var $vm = this;
             this.$render($vm.d_value, function(res) {
+                console.log(res)
                 // render
                 $vm.d_render = res;
                 // change回调  toggleChange == false 时候触发change回调
@@ -646,8 +673,8 @@ export default {
                 $vm.currentTimeout = setTimeout(() => {
                     $vm.saveHistory();
                 }, 500);
-            })
-        },
+                })
+            }, 300),
         // 清空上一步 下一步缓存
         $emptyHistory() {
             this.d_history = [this.d_value] // 编辑记录
