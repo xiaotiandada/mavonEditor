@@ -655,7 +655,7 @@ export default {
         iRender: debounce(function (toggleChange) {
             var $vm = this;
             this.$render($vm.d_value, function(res) {
-                console.log(res)
+                // console.log(res)
                 // render
                 $vm.d_render = res;
                 // change回调  toggleChange == false 时候触发change回调
