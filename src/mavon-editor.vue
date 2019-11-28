@@ -659,7 +659,7 @@ export default {
                 let len = allTag.length
                 if (idx >= len) return false
                 else {
-                    console.log(idx)
+                    // console.log(idx)
                     let el = allTag[idx]
                     el.setAttribute('src', arr[idx])
                     // iframe onload after set next iframe src
@@ -697,7 +697,8 @@ export default {
                 $vm.$nextTick(() => {
                     clearTimeout($vm.timer)
                     $vm.timer = setTimeout(() => {
-                        if (srcArr.length <= 0) return console.log('数组没有数据可供修改')
+                        // console.log('数组没有数据可供修改')
+                        if (srcArr.length <= 0) return
                         $vm.optimizationTag(srcArr, 'iframe')
                     }, 2000)
                 })
