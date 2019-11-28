@@ -299,7 +299,8 @@ export default {
                     return 'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.3/katex.min.css';
                 }
             },
-            p_external_link: {}
+            p_external_link: {},
+            timer: null
         };
     },
     created() {
@@ -651,13 +652,58 @@ export default {
         //         }, 500);
         //     })
         // },
+        optimizationTag(arr, tag) {
+            const updateSrc = (idx = 0) => {
+                let allTag = this.$refs.vShowContent.querySelectorAll(tag)
+                if (!allTag) return
+                let len = allTag.length
+                if (idx >= len) return false
+                else {
+                    console.log(idx)
+                    let el = allTag[idx]
+                    el.setAttribute('src', arr[idx])
+                    // iframe onload after set next iframe src
+                    if (el.attachEvent) el.attachEvent('onload', () => updateSrc(++idx))
+                    else el.onload = () => updateSrc(++idx)
+                }
+            }
+            updateSrc()
+        },
+        getTagSrcArrAndRemoveTagSrc(res, tag) {
+            try {
+                let divDom = document.createElement('div')
+                divDom.innerHTML = res
+                let allTag = divDom.querySelectorAll(tag)
+                let srcArr = []
+                let result = ''
+                allTag.forEach((el, i) => {
+                    srcArr.push(el.getAttribute('src'))
+                    el.setAttribute('src', '')
+                })
+                return {result: divDom.innerHTML, srcArr}
+            } catch (error) {
+                return {result: '', srcArr: []}
+            }
+        },
         // 添加防抖 渲染内容
         iRender: debounce(function (toggleChange) {
             var $vm = this;
             this.$render($vm.d_value, function(res) {
-                // console.log(res)
                 // render
-                $vm.d_render = res;
+                let { result, srcArr } = $vm.getTagSrcArrAndRemoveTagSrc(res, 'iframe')
+                // console.log(result, srcArr)
+                $vm.d_render = result;
+
+                $vm.$nextTick(() => {
+                    clearTimeout($vm.timer)
+                    $vm.timer = setTimeout(() => {
+                        if (srcArr.length <= 0) return console.log('数组没有数据可供修改')
+                        $vm.optimizationTag(srcArr, 'iframe')
+                    }, 2000)
+                })
+                // $vm.nowTime = Date.now()
+
+                // console.log($vm.$refs.vShowContent)
                 // change回调  toggleChange == false 时候触发change回调
                 if (!toggleChange)
                 {
@@ -674,7 +720,7 @@ export default {
                     $vm.saveHistory();
                 }, 500);
                 })
-            }, 300),
+            }, 500),
         // 清空上一步 下一步缓存
         $emptyHistory() {
             this.d_history = [this.d_value] // 编辑记录
