@@ -90,6 +90,7 @@ markdown.use(mihe, hljs_opts)
     .use(taskLists)
     .use(toc)
     .use(tableOfContents, {
+        includeLevel: [1,2,3], // hackmd 也只支持到了h3
         markerPattern: /^\[toc\]$/im // 如果想 支持 [[toc]] [toc] 的话不能添加 $
     })
 
