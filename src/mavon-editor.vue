@@ -653,9 +653,11 @@ export default {
         //     })
         // },
         optimizationTag(arr, tag) {
-            const updateSrc = (idx = 0) => {
+            const sleep = time => new Promise(resolve => setTimeout(resolve, time))
+            const updateSrc = async (idx = 0) => {
                 let allTag = this.$refs.vShowContent.querySelectorAll(tag)
                 if (!allTag) return
+                await sleep(300)
                 let len = allTag.length
                 if (idx >= len) return false
                 else {
@@ -700,7 +702,7 @@ export default {
                         // console.log('数组没有数据可供修改')
                         if (srcArr.length <= 0) return
                         $vm.optimizationTag(srcArr, 'iframe')
-                    }, 2000)
+                    }, 1600)
                 })
                 // $vm.nowTime = Date.now()
 
