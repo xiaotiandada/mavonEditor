@@ -34,6 +34,8 @@ var taskLists = require('markdown-it-task-lists')
 var container = require('markdown-it-container')
 //
 var toc = require('markdown-it-toc')
+// markdown-it-table-of-contents
+var tableOfContents = require('markdown-it-table-of-contents')
 // add target="_blank" to all link
 var defaultRender = markdown.renderer.rules.link_open || function(tokens, idx, options, env, self) {
     return self.renderToken(tokens, idx, options);
@@ -87,6 +89,9 @@ markdown.use(mihe, hljs_opts)
     .use(katex)
     .use(taskLists)
     .use(toc)
+    .use(tableOfContents, {
+        markerPattern: /^\[toc\]$/im // 如果想 支持 [[toc]] [toc] 的话不能添加 $
+    })
 
 export default {
     data() {
