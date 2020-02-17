@@ -32,10 +32,15 @@ var mark = require('markdown-it-mark')
 var taskLists = require('markdown-it-task-lists')
 // container
 var container = require('markdown-it-container')
-//
-var toc = require('markdown-it-toc')
+// 注释原因: 因为和markdown-it-anchor的功能冲突了(他们的实现方法不一样)
+// var toc = require('markdown-it-toc')
+// anchor
+// error: plugin.apply is not a function
+// fix: https://github.com/tylingsoft/markdown-it-mermaid/issues/4
+var anchor = require('markdown-it-anchor').default
 // markdown-it-table-of-contents
 var tableOfContents = require('markdown-it-table-of-contents')
+
 // add target="_blank" to all link
 var defaultRender = markdown.renderer.rules.link_open || function(tokens, idx, options, env, self) {
     return self.renderToken(tokens, idx, options);
@@ -88,11 +93,12 @@ markdown.use(mihe, hljs_opts)
     .use(miip)
     .use(katex)
     .use(taskLists)
-    .use(toc)
+    .use(anchor)
     .use(tableOfContents, {
         includeLevel: [1,2,3], // hackmd 也只支持到了h3
-        markerPattern: /^\[toc\]$/im // 如果想 支持 [[toc]] [toc] 的话不能添加 $
+        markerPattern: /^\[toc\]|^\[\[toc\]\]/im // 如果想 支持 [[toc]] [toc] 的话不能添加 $
     })
+    // .use(toc)
 
 export default {
     data() {
