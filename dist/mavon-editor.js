@@ -5068,29 +5068,29 @@ var markdown_config = {
 };
 var markdown = __webpack_require__(162)(markdown_config);
 
-var emoji = __webpack_require__(145);
+var emoji = __webpack_require__(146);
 
-var sub = __webpack_require__(157);
+var sub = __webpack_require__(158);
 
-var sup = __webpack_require__(158);
+var sup = __webpack_require__(159);
 
-var deflist = __webpack_require__(144);
+var deflist = __webpack_require__(145);
 
 var abbr = __webpack_require__(142);
 
-var footnote = __webpack_require__(151);
+var footnote = __webpack_require__(152);
 
-var insert = __webpack_require__(154);
+var insert = __webpack_require__(155);
 
-var mark = __webpack_require__(156);
+var mark = __webpack_require__(157);
 
-var taskLists = __webpack_require__(160);
+var taskLists = __webpack_require__(161);
 
-var container = __webpack_require__(143);
+var container = __webpack_require__(144);
 
-var toc = __webpack_require__(161);
+var anchor = __webpack_require__(143).default;
 
-var tableOfContents = __webpack_require__(159);
+var tableOfContents = __webpack_require__(160);
 
 var defaultRender = markdown.renderer.rules.link_open || function (tokens, idx, options, env, self) {
     return self.renderToken(tokens, idx, options);
@@ -5109,10 +5109,10 @@ markdown.renderer.rules.link_open = function (tokens, idx, options, env, self) {
 
     return defaultRender(tokens, idx, options, env, self);
 };
-var mihe = __webpack_require__(152);
+var mihe = __webpack_require__(153);
 
-var katex = __webpack_require__(155);
-var miip = __webpack_require__(153);
+var katex = __webpack_require__(156);
+var miip = __webpack_require__(154);
 var missLangs = {};
 var needLangs = [];
 var hljs_opts = {
@@ -5125,9 +5125,10 @@ var hljs_opts = {
         }
     }
 };
-markdown.use(mihe, hljs_opts).use(emoji).use(sup).use(sub).use(container).use(container, 'hljs-left').use(container, 'hljs-center').use(container, 'hljs-right').use(deflist).use(abbr).use(footnote).use(insert).use(mark).use(container).use(miip).use(katex).use(taskLists).use(toc).use(tableOfContents, {
+markdown.use(mihe, hljs_opts).use(emoji).use(sup).use(sub).use(container).use(container, 'hljs-left').use(container, 'hljs-center').use(container, 'hljs-right').use(deflist).use(abbr).use(footnote).use(insert).use(mark).use(container).use(miip).use(katex).use(taskLists).use(anchor).use(tableOfContents, {
     includeLevel: [1, 2, 3],
-    markerPattern: /^\[toc\]$/im });
+    markerPattern: /^\[toc\]|^\[\[toc\]\]/im });
+
 
 /* harmony default export */ __webpack_exports__["a"] = ({
     data: function data() {
@@ -10419,6 +10420,16 @@ module.exports = function sub_plugin(md) {
 
 /***/ }),
 /* 143 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var n={false:"push",true:"unshift"},e=Object.prototype.hasOwnProperty,r=function(n,t){t=Object.assign({},r.defaults,t),n.core.ruler.push("anchor",function(n){var r,i={},u=n.tokens,o=Array.isArray(t.level)?(r=t.level,function(n){return r.includes(n)}):function(n){return function(e){return e>=n}}(t.level);u.filter(function(n){return"heading_open"===n.type}).filter(function(n){return o(Number(n.tag.substr(1)))}).forEach(function(r){var o=u[u.indexOf(r)+1].children.filter(function(n){return"text"===n.type||"code_inline"===n.type}).reduce(function(n,e){return n+e.content},""),c=r.attrGet("id");null==c&&(c=function(n,r){for(var t=n,i=2;e.call(r,t);)t=n+"-"+i++;return r[t]=!0,t}(t.slugify(o),i),r.attrPush(["id",c])),t.permalink&&t.renderPermalink(c,t,n,u.indexOf(r)),t.callback&&t.callback(r,{slug:c,title:o})})})};r.defaults={level:1,slugify:function(n){return encodeURIComponent(String(n).trim().toLowerCase().replace(/\s+/g,"-"))},permalink:!1,renderPermalink:function(e,r,t,i){var u,o=[Object.assign(new t.Token("link_open","a",1),{attrs:[["class",r.permalinkClass],["href",r.permalinkHref(e,t)]]}),Object.assign(new t.Token("html_block","",0),{content:r.permalinkSymbol}),new t.Token("link_close","a",-1)];r.permalinkSpace&&o[n[!r.permalinkBefore]](Object.assign(new t.Token("text","",0),{content:" "})),(u=t.tokens[i+1].children)[n[r.permalinkBefore]].apply(u,o)},permalinkClass:"header-anchor",permalinkSpace:!0,permalinkSymbol:"¶",permalinkBefore:!1,permalinkHref:function(n){return"#"+n}};/* harmony default export */ __webpack_exports__["default"] = (r);
+//# sourceMappingURL=markdownItAnchor.mjs.map
+
+
+/***/ }),
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10568,7 +10579,7 @@ module.exports = function container_plugin(md, name, options) {
 
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10800,18 +10811,18 @@ module.exports = function deflist_plugin(md) {
 
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 
-var emojies_defs      = __webpack_require__(146);
-var emojies_shortcuts = __webpack_require__(147);
-var emoji_html        = __webpack_require__(149);
-var emoji_replace     = __webpack_require__(150);
-var normalize_opts    = __webpack_require__(148);
+var emojies_defs      = __webpack_require__(147);
+var emojies_shortcuts = __webpack_require__(148);
+var emoji_html        = __webpack_require__(150);
+var emoji_replace     = __webpack_require__(151);
+var normalize_opts    = __webpack_require__(149);
 
 
 module.exports = function emoji_plugin(md, options) {
@@ -10830,7 +10841,7 @@ module.exports = function emoji_plugin(md, options) {
 
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -12317,7 +12328,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12365,7 +12376,7 @@ module.exports = {
 
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12431,7 +12442,7 @@ module.exports = function normalize_opts(options) {
 
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12443,7 +12454,7 @@ module.exports = function emoji_html(tokens, idx /*, options, env */) {
 
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12539,7 +12550,7 @@ module.exports = function create_rule(md, emojies, shortcuts, scanRE, replaceRE)
 
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12910,7 +12921,7 @@ module.exports = function footnote_plugin(md) {
 
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports) {
 
 /**
@@ -12954,7 +12965,7 @@ module.exports = hljs;
 
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, exports) {
 
 /**
@@ -12997,7 +13008,7 @@ module.exports = function(md, config){
 
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13124,7 +13135,7 @@ module.exports = function ins_plugin(md) {
 
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13347,7 +13358,7 @@ module.exports = function math_plugin(md, options) {
 
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13474,7 +13485,7 @@ module.exports = function ins_plugin(md) {
 
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13547,7 +13558,7 @@ module.exports = function sub_plugin(md) {
 
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13619,7 +13630,7 @@ module.exports = function sup_plugin(md) {
 
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13794,7 +13805,7 @@ module.exports = (md, o) => {
 
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, exports) {
 
 // Markdown-it plugin to render GitHub-style task lists; see
@@ -13913,149 +13924,6 @@ function startsWithTodoMarkdown(token) {
 	// leading whitespace in a list item is already trimmed off by markdown-it
 	return token.content.indexOf('[ ] ') === 0 || token.content.indexOf('[x] ') === 0 || token.content.indexOf('[X] ') === 0;
 }
-
-
-/***/ }),
-/* 161 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-// Process @[toc](|Title)
-
-
-
-module.exports = function(md) {
-
-    var TOC_REGEXP = /^@\[toc\](?:\((?:\s+)?([^\)]+)(?:\s+)?\)?)?(?:\s+?)?$/im;
-    var TOC_DEFAULT = 'Table of Contents';
-    var gstate;
-
-    function toc(state, silent) {
-        while (state.src.indexOf('\n') >= 0 && state.src.indexOf('\n') < state.src.indexOf('@[toc]')) {
-            if (state.tokens.slice(-1)[0].type === 'softbreak') {
-                state.src = state.src.split('\n').slice(1).join('\n');
-                state.pos = 0;
-            }
-        }
-        var token;
-
-        // trivial rejections
-        if (state.src.charCodeAt(state.pos) !== 0x40 /* @ */ ) {
-            return false;
-        }
-        if (state.src.charCodeAt(state.pos + 1) !== 0x5B /* [ */ ) {
-            return false;
-        }
-
-        var match = TOC_REGEXP.exec(state.src);
-        if (!match) {
-            return false;
-        }
-        match = match.filter(function(m) {
-            return m;
-        });
-        if (match.length < 1) {
-            return false;
-        }
-        if (silent) { // don't run any pairs in validation mode
-            return false;
-        }
-
-        token = state.push('toc_open', 'toc', 1);
-        token.markup = '@[toc]';
-
-        token = state.push('toc_body', '', 0);
-        var label = TOC_DEFAULT;
-        if (match.length > 1) {
-            label = match.pop();
-        }
-        token.content = label;
-
-        token = state.push('toc_close', 'toc', -1);
-
-        var offset = 0;
-        var newline = state.src.indexOf('\n');
-        if (newline !== -1) {
-            offset = state.pos + newline;
-        } else {
-            offset = state.pos + state.posMax + 1;
-        }
-        state.pos = offset;
-
-        return true;
-    }
-    var makeSafe = function(label) {
-        return label.replace(/[^\w\s]/gi, '').split(' ').join('_');
-    };
-
-    md.renderer.rules.heading_open = function(tokens, index) {
-        var level = tokens[index].tag;
-        var label = tokens[index + 1];
-        if (label.type === 'inline') {
-            var anchor = makeSafe(label.content) + '_' + label.map[0];
-            return '<' + level + '><a id="' + anchor + '"></a>';
-        } else {
-            return '</h1>';
-        }
-    };
-
-    md.renderer.rules.toc_open = function(tokens, index) {
-        return '';
-    };
-
-    md.renderer.rules.toc_close = function(tokens, index) {
-        return '';
-    };
-
-    md.renderer.rules.toc_body = function(tokens, index) {
-        // Wanted to avoid linear search through tokens here, 
-        // but this seems the only reliable way to identify headings
-        var headings = [];
-        var gtokens = gstate.tokens;
-        var size = gtokens.length;
-        for (var i = 0; i < size; i++) {
-            if (gtokens[i].type !== 'heading_close') {
-                continue;
-            }
-            var token = gtokens[i];
-            var heading = gtokens[i - 1];
-            if (heading.type === 'inline') {
-                headings.push({
-                    level: +token.tag.substr(1, 1),
-                    anchor: makeSafe(heading.content) + '_' + heading.map[0],
-                    content: heading.content
-                });
-            }
-        }
-
-        var indent = 0;
-        var list = headings.map(function(heading) {
-            var res = [];
-            if (heading.level > indent) {
-                var ldiff = (heading.level - indent);
-                for (var i = 0; i < ldiff; i++) {
-                    res.push('<ul>');
-                    indent++;
-                }
-            } else if (heading.level < indent) {
-                var ldiff = (indent - heading.level);
-                for (var i = 0; i < ldiff; i++) {
-                    res.push('</ul>');
-                    indent--;
-                }
-            }
-            res = res.concat(['<li><a href="#', heading.anchor, '">', heading.content, '</a></li>']);
-            return res.join('');
-        });
-
-        return '<h3>' + tokens[index].content + '</h3>' + list.join('') + new Array(indent + 1).join('</ul>');
-    };
-
-    md.core.ruler.push('grab_state', function(state) {
-        gstate = state;
-    });
-    md.inline.ruler.after('emphasis', 'toc', toc);
-};
 
 
 /***/ }),
