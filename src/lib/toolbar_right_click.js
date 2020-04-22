@@ -54,12 +54,15 @@ function $toolbar_right_fullscreen_click($vm) {
 function $toolbar_right_subfield_click ($vm) {
     $vm.s_subfield = !$vm.s_subfield
     $vm.s_preview_switch = $vm.s_subfield;
+
     // $vm.$refs.vNoteDivEdit.innerHTML = $vm.s_markdown.render($vm.d_value)
     if ($vm.previewtoggle) {
+        console.log($vm.s_preview_switch)
         $vm.previewtoggle($vm.s_preview_switch, $vm.d_value)
     }
     // $vm.$refs.vNoteDivEdit.innerHTML = $vm.s_markdown.render($vm.d_value)
     if ($vm.subfieldtoggle) {
+        console.log($vm.s_subfield)
         $vm.subfieldtoggle($vm.s_subfield, $vm.d_value)
     }
 }
@@ -76,6 +79,40 @@ function $toolbar_right_navigation_click($vm) {
         $vm.getNavigation($vm, false)
     }
 }
+// 编辑
+function $toolbar_right_edit_click($vm) {
+    // 阅读隐藏
+    $vm.s_preview_switch = false
+    // 编辑显示
+    $vm.s_subfield = true
+
+    // 切换编辑
+    if ($vm.previewtoggle) {
+        $vm.previewtoggle(true, $vm.d_value)
+    }
+}
+// 对比
+function $toolbar_right_compared_click($vm) {
+    $vm.s_preview_switch = true
+    $vm.s_subfield = true
+
+    if ($vm.previewtoggle) {
+        $vm.previewtoggle(true, $vm.d_value)
+    }
+    if ($vm.subfieldtoggle) {
+        $vm.subfieldtoggle(true, $vm.d_value)
+    }
+}
+// 阅读
+function $toolbar_right_view_click($vm) {
+    $vm.s_preview_switch = true
+    $vm.s_subfield = false
+
+    // 切换阅读
+    if ($vm.subfieldtoggle) {
+        $vm.subfieldtoggle(true, $vm.d_value)
+    }
+}
 export const toolbar_right_click = (_type, $vm) => {
     var _other_right_click = {
         'help': $toolbar_right_help_click,
@@ -84,7 +121,11 @@ export const toolbar_right_click = (_type, $vm) => {
         'preview': $toolbar_right_preview_click,
         'fullscreen': $toolbar_right_fullscreen_click,
         'navigation': $toolbar_right_navigation_click,
-        'subfield': $toolbar_right_subfield_click
+        'subfield': $toolbar_right_subfield_click,
+        // toggle
+        'edit': $toolbar_right_edit_click,
+        'compared': $toolbar_right_compared_click,
+        'view': $toolbar_right_view_click
     }
     if (_other_right_click.hasOwnProperty(_type)) {
         _other_right_click[_type]($vm);

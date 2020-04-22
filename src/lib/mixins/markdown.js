@@ -2,6 +2,8 @@ import hljsLangs from '../core/hljs/lang.hljs.js'
 import {
     loadScript
 } from '../core/extra-function.js'
+import ayncscroll from '../../lib/syncscroll.js'
+
 var markdown_config = {
     html: true,        // Enable HTML tags in source
     xhtmlOut: true,        // Use '/' to close single tags (<br />).
@@ -40,6 +42,9 @@ var container = require('markdown-it-container')
 var anchor = require('markdown-it-anchor').default
 // markdown-it-table-of-contents
 var tableOfContents = require('markdown-it-table-of-contents')
+// https://www.npmjs.com/package/markdown-it-container
+const miContainer = require('markdown-it-container')
+
 
 // add target="_blank" to all link
 var defaultRender = markdown.renderer.rules.link_open || function(tokens, idx, options, env, self) {
@@ -99,6 +104,8 @@ markdown.use(mihe, hljs_opts)
         markerPattern: /^\[toc\]|^\[\[toc\]\]/im // 如果想 支持 [[toc]] [toc] 的话不能添加 $
     })
     // .use(toc)
+
+    ayncscroll(markdown)
 
 export default {
     data() {

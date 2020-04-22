@@ -1,4 +1,4 @@
-@[toc](目录)
+[toc](目录)
 
 Markdown 语法简介
 =============
@@ -99,6 +99,22 @@ int main()
 }
 ```
 `code`
+
+```js
+let a = 'a';
+console.log(a);
+```
+
+```html
+<h1>Hi</h1>
+```
+
+```css
+body {
+    padding: 20px;
+}
+```
+
 ## 表格(table)
 ```
 | 标题1 | 标题2 | 标题3 |

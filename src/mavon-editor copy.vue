@@ -1,23 +1,24 @@
 <template>
     <div :class="[{ 'fullscreen': s_fullScreen, 'shadow': boxShadow }]" class="v-note-wrapper markdown-body" :style="{'box-shadow': boxShadow ? boxShadowStyle : ''}">
         <!--工具栏-->
-        <div class="head-toolbar" >
-            <div>
-                <slot slot="head-toolbar-left" />
-            </div>
-            <v-md-head-toolbar-right 
-                ref="toolbar_right" 
-                :d_words="d_words"
-                @toolbar_right_click="toolbar_right_click"
-                :toolbars="toolbars"
-                :s_subfield="s_subfield"
-                :s_preview_switch="s_preview_switch" :s_fullScreen="s_fullScreen"
-                :s_html_code="s_html_code"
-                :s_navigation="s_navigation"
-                :class="{'transition': transition}">
-                <slot slot="head-toolbar-right-before" />
-                <slot slot="head-toolbar-right-after" />
-            </v-md-head-toolbar-right>
+        <div class="v-note-op" v-show="toolbarsFlag" :style="{'background': toolbarsBackground}">
+            <v-md-toolbar-left ref="toolbar_left" :editable="editable" :transition="transition" :d_words="d_words"
+                               @toolbar_left_click="toolbar_left_click" @toolbar_left_addlink="toolbar_left_addlink" :toolbars="toolbars"
+                               @imgAdd="$imgAdd" @imgDel="$imgDel" @imgTouch="$imgTouch" :image_filter="imageFilter"
+                               :class="{'transition': transition}">
+                <slot name="left-toolbar-before" slot="left-toolbar-before" />
+                <slot name="left-toolbar-after" slot="left-toolbar-after" />
+            </v-md-toolbar-left>
+            <v-md-toolbar-right ref="toolbar_right" :d_words="d_words" @toolbar_right_click="toolbar_right_click"
+                                :toolbars="toolbars"
+                                :s_subfield="s_subfield"
+                                :s_preview_switch="s_preview_switch" :s_fullScreen="s_fullScreen"
+                                :s_html_code="s_html_code"
+                                :s_navigation="s_navigation"
+                                :class="{'transition': transition}">
+                <slot name="right-toolbar-before" slot="right-toolbar-before" />
+                <slot name="right-toolbar-after" slot="right-toolbar-after" />
+            </v-md-toolbar-right>
         </div>
         <!--编辑展示区域-->
         <div class="v-note-panel">
@@ -26,28 +27,8 @@
             <div ref="vNoteEdit" class="v-note-edit divarea-wrapper"
                  :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle && !s_preview_switch && !s_html_code, 'single-edit': !s_preview_switch && !s_html_code, 'single-show': (!s_subfield && s_preview_switch) || (!s_subfield && s_html_code), 'transition': transition}"
                  >
-                <!--工具栏-->
-                <div class="v-note-op edit-toolbar" v-show="toolbarsFlag">
-                    <v-md-toolbar 
-                        ref="toolbar_left" 
-                        :editable="editable" 
-                        :transition="transition" 
-                        :d_words="d_words"
-                        @toolbar_left_click="toolbar_left_click"
-                        @toolbar_left_addlink="toolbar_left_addlink" 
-                        :toolbars="toolbars"
-                        @imgAdd="$imgAdd" 
-                        @imgDel="$imgDel" 
-                        @imgTouch="$imgTouch" 
-                        :image_filter="imageFilter"
-                        :class="{'transition': transition}">
-                        <slot name="left-toolbar-before" slot="left-toolbar-before" />
-                        <slot name="left-toolbar-after" slot="left-toolbar-after" />
-                    </v-md-toolbar>
-                </div>
                  <!-- @click="textAreaFocus" -->
-                <div class="edit-content">
-                    <div class="content-input-wrapper" :style="{'background-color': editorBackground}">
+                <div class="content-input-wrapper" :style="{'background-color': editorBackground}">
                     <!-- 双栏 -->
                     <v-autoTextarea ref="vNoteTextarea" :placeholder="placeholder ? placeholder : d_words.start_editor"
                                     class="content-input" :fontSize="fontSize"
@@ -60,7 +41,6 @@
                         v-model="d_value"  
                         :options="cmOptions"></codemirror>
                     
-                     </div>
                 </div>
             </div>
             <!--展示区-->
@@ -68,10 +48,10 @@
                  v-show="s_preview_switch || s_html_code" class="v-note-show">
                 <div @scroll="$v_edit_scroll__right" ref="vShowContent" v-html="d_render" v-show="!s_html_code"
                      :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content"
-                     >
+                     :style="{'background-color': previewBackground}">
                 </div>
                 <div v-show="s_html_code" :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content-html spoiler"
-                  >
+                  :style="{'background-color': previewBackground}">
                     {{d_render}}
                 </div>
             </div>
@@ -179,16 +159,13 @@ import {
 } from './lib/core/extra-function.js'
 import {p_ObjectCopy_DEEP, stopEvent} from './lib/util.js'
 import {toolbar_left_click, toolbar_left_addlink} from './lib/toolbar_left_click.js'
-import { toolbar } from './lib/toolbar'
 import {toolbar_right_click} from './lib/toolbar_right_click.js'
 import {CONFIG} from './lib/config.js'
 import hljs from './lib/core/highlight.js'
 import markdown from './lib/mixins/markdown.js'
 
-import md_toolbar from './components/md-toolbar.vue'
 import md_toolbar_left from './components/md-toolbar-left.vue'
 import md_toolbar_right from './components/md-toolbar-right.vue'
-import md_head_toolbar_right from './components/md-head-toolbar-right.vue'
 import "./lib/font/css/fontello.css"
 import './lib/css/md.css'
 import debounce from 'lodash/debounce'
@@ -198,14 +175,6 @@ import anime from 'animejs/lib/anime.es.js';
 const isMac = true
 export default {
     mixins: [markdown],
-    components: {
-        'v-autoTextarea': autoTextarea,
-        'v-md-toolbar-left': md_toolbar_left,
-        'v-md-toolbar-right': md_toolbar_right,
-        'v-md-toolbar': md_toolbar,
-        'v-md-head-toolbar-right': md_head_toolbar_right,
-        codemirror
-    },
     props: {
         scrollStyle: {  // 是否渲染滚动条样式(webkit)
             type: Boolean,
@@ -555,7 +524,6 @@ export default {
         }
         // fullscreen事件
         fullscreenchange(this);
-        console.log(11, this.value)
         this.d_value = this.value;
         // 将help添加到末尾
         document.body.appendChild(this.$refs.help);
@@ -723,8 +691,7 @@ export default {
             }
         },
         toolbar_left_click(_type) {
-            // toolbar_left_click(_type, this);
-            toolbar(_type, this)
+            toolbar_left_click(_type, this);
         },
         toolbar_left_addlink(_type, text, link) {
             toolbar_left_addlink(_type, text, link, this);
@@ -1105,70 +1072,74 @@ export default {
         codeStyle: function (val) {
             this.codeStyleChange(val)
         }
+    },
+    components: {
+        'v-autoTextarea': autoTextarea,
+        'v-md-toolbar-left': md_toolbar_left,
+        'v-md-toolbar-right': md_toolbar_right,
+        codemirror
     }
 };
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import 'lib/css/scroll.styl';
 @import 'lib/css/mavon-editor.styl';
-@import 'lib/css/mavon-editor_new.styl';
 </style>
 <style lang="css" scoped>
 .auto-textarea-wrapper {
   height: 100%;
 }
 .codemirror-editor {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 .codemirror-editor /deep/ .CodeMirror {
-  height: 100%;
+    height: 100%;
 }
-</style>
-<style lang="css">
+
+
 </style>
 
 
 <style lang="css">
 /* 折叠 */
 .CodeMirror-foldmarker {
-  color: #d0d0d0;
-  text-shadow: none;
-  font-family: Arial;
-  font-size: 1em;
-  line-height: 0.3;
-  cursor: pointer;
-  margin: 2px;
-  padding-bottom: 2px;
+    color: #d0d0d0;
+    text-shadow: none;
+    font-family: Arial;
+    font-size: 1em;
+    line-height: .3;
+    cursor: pointer;
+    margin: 2px;
+    padding-bottom: 2px;
 }
 .CodeMirror-foldgutter {
-  /*width: 1em;*/
-  cursor: default;
-  line-height: 100%;
+    /*width: 1em;*/
+    cursor: default;
+    line-height: 100%;
 }
 .CodeMirror-foldgutter-open,
 .CodeMirror-foldgutter-folded {
-  line-height: 1em;
-  cursor: pointer;
+    line-height: 1em;
+    cursor: pointer;
 }
 .CodeMirror-foldgutter-open {
-  padding-top: 1px;
+    padding-top: 1px;
 }
 .CodeMirror-foldgutter-folded {
-  padding-top: 2px;
+    padding-top: 2px;
 }
 .CodeMirror-foldgutter-open:after {
-  content: "⌵";
-  font-size: 1em;
-  /*    opacity: 0.5;*/
+    content: "⌵";
+    font-size: 1em;
+/*    opacity: 0.5;*/
 }
 .CodeMirror-foldgutter-folded:after {
-  content: "+";
-  font-size: 1em;
-  font-weight: 700;
+    content: "+";
+    font-size: 1em;
+    font-weight: 700;
 }
-.CodeMirror-foldmarker,
-.CodeMirror-foldgutter-folded:after {
-  color: #78b2f2 !important;
+.CodeMirror-foldmarker, .CodeMirror-foldgutter-folded:after {
+    color: #78B2F2 !important;
 }
 </style>
