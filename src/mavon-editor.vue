@@ -47,21 +47,34 @@
                 </div>
                  <!-- @click="textAreaFocus" -->
                 <div class="edit-content">
-                    <div class="content-input-wrapper" :style="{'background-color': editorBackground}">
+                    <div class="content-input-wrapper">
                     <!-- 双栏 -->
                     <v-autoTextarea ref="vNoteTextarea" :placeholder="placeholder ? placeholder : d_words.start_editor"
                                     class="content-input" :fontSize="fontSize"
                                     lineHeight="1.5" v-model="d_value" fullHeight
-                                    :style="{'background-color': editorBackground, 'position': 'fixed', 'top': 0, 'left': '0', height: '100px', display: 'none'}"></v-autoTextarea>
+                                    :style="{'position': 'fixed', 'top': 0, 'left': '0', height: '100px', display: 'none'}"></v-autoTextarea>
                     <codemirror 
                         @scroll="$v_edit_scroll__left"
                         ref="myCm" 
                         class="codemirror-editor" 
                         v-model="d_value"  
+                        @cursorActivity="onCursorActivity"
+                        @beforeSelectionChange="onBeforeSelectionChange"
+                        @changes="onChanges"
                         :options="cmOptions"></codemirror>
-                    
+                
                      </div>
                 </div>
+                                    
+                    <div class="status-bar">
+                        <div class="status-info">      
+                            <div class="status-cursor">          
+                                <span class="status-line-column">第 {{statusBar.line}} 行，第 {{statusBar.column}} 栏</span>          
+                                <span class="status-selection" v-show="statusBar.select > 0"> — 已选择 {{statusBar.select}} 行</span>    
+                            </div>        
+                            <div class="status-file"> — 共 {{statusBar.count}} 行</div>   
+                         </div>
+                    </div>
             </div>
             <!--展示区-->
             <div :class="{'single-show': (!s_subfield && s_preview_switch) || (!s_subfield && s_html_code)}"
@@ -144,7 +157,9 @@ import 'codemirror/addon/fold/markdown-fold.js'
 
 import 'codemirror/addon/display/fullscreen.css'
 import 'codemirror/addon/dialog/dialog.css'
+
 import 'codemirror/addon/scroll/simplescrollbars.css'
+import 'codemirror/addon/scroll/simplescrollbars.js'
 // serch
 import 'codemirror/addon/search/matchesonscrollbar.css'
 // CloseBrackets
@@ -492,6 +507,7 @@ export default {
                 styleActiveLine: true,
                 lineNumbers: true,
                 lineWrapping: true,
+                scrollPastEnd: true,
                 showCursorWhenSelecting: true,
                 highlightSelectionMatches: true,
                 indentUnit: 4,
@@ -514,12 +530,20 @@ export default {
                 addModeClass: true,
                 // readOnly: true,
                 // autoRefresh: true,
-                otherCursors: true
+                otherCursors: true,
+                scrollbarStyle: 'overlay'
             },
+            // 滚动开关
             scrollSwitchLeft: false,
             scrollSwitchTimerLeft: null,
             scrollSwitchRight: false,
-            scrollSwitchTimerRight: null
+            scrollSwitchTimerRight: null,
+            statusBar: {
+                line: 0,
+                column: 0,
+                select: 0,
+                count: 0
+            }
         };
     },
     created() {
@@ -1063,7 +1087,31 @@ export default {
         $emptyHistory() {
             this.d_history = [this.d_value] // 编辑记录
             this.d_history_index = 0 // 编辑记录索引
+        },
+        // 更新 status
+        updateStatusBar () {
+            let editor = this.codemirror
+            let cursor = editor.getCursor()
+
+            this.statusBar.line = cursor.line + 1
+    
+            this.statusBar.column = cursor.ch + 1
+
+            let select = editor.getSelection()
+            this.statusBar.select = select ? editor.getSelection().split('\n').length : 0
+
+            this.statusBar.count = editor.lineCount()
+        },
+        onCursorActivity(cm) {
+            this.updateStatusBar()
+        },
+        onBeforeSelectionChange(cm) {
+            this.updateStatusBar()
+        },
+        onChanges(cm) {
+            this.updateStatusBar()
         }
+
     },
     computed: {
         codemirror() {
@@ -1170,5 +1218,10 @@ export default {
 .CodeMirror-foldmarker,
 .CodeMirror-foldgutter-folded:after {
   color: #78b2f2 !important;
+}
+/* 滚动条隐藏 */
+.CodeMirror-scroll {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
 }
 </style>
