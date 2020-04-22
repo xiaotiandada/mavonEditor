@@ -28,7 +28,7 @@
                 :title="`${d_words.tl_ul} (ctrl+alt+u)`"></button>
         <button :disabled="!editable" type="button" v-if="toolbars.task" @click="$clicks('task')"
                 class="op-icon icon-btn" aria-hidden="true">
-                <svg t="1587552064824" class="task-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7961" width="200" height="200"><path d="M896 64H128a64 64 0 0 0-64 64v768a64 64 0 0 0 64 64h768a64 64 0 0 0 64-64V128a64 64 0 0 0-64-64z m-162.368 292.16l-223.36 358.784a44.864 44.864 0 0 1-35.904 20.928c-0.576 0.128-1.344 0.128-1.984 0.128a44.992 44.992 0 0 1-35.648-17.664L292.608 537.472a44.608 44.608 0 0 1 71.104-53.888l105.088 129.152 189.248-303.744a44.544 44.544 0 1 1 75.584 47.168z" p-id="7962" fill="#747474"></path></svg>
+                <svg t="1587552064824" class="task-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7961" width="200" height="200"><path d="M896 64H128a64 64 0 0 0-64 64v768a64 64 0 0 0 64 64h768a64 64 0 0 0 64-64V128a64 64 0 0 0-64-64z m-162.368 292.16l-223.36 358.784a44.864 44.864 0 0 1-35.904 20.928c-0.576 0.128-1.344 0.128-1.984 0.128a44.992 44.992 0 0 1-35.648-17.664L292.608 537.472a44.608 44.608 0 0 1 71.104-53.888l105.088 129.152 189.248-303.744a44.544 44.544 0 1 1 75.584 47.168z" p-id="7962" fill="#ccc"></path></svg>
                 </button>
         <span v-if="toolbars.code || toolbars.quote || toolbars.ol || toolbar.ul || toolbar.task" class="op-icon-divider"></span>
         <button :disabled="!editable" type="button" v-if="toolbars.link" @click.stop="$clicks('link')"
@@ -38,7 +38,7 @@
                 class="op-icon fa fa-mavon-picture-o" aria-hidden="true"></button>
         <button :disabled="!editable" type="button" v-if="toolbars.line" @click.stop="$clicks('line')"
                 class="op-icon icon-btn" aria-hidden="true">
-                <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#747474"></path></svg>
+                <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#ccc"></path></svg>
         </button>
         <slot name="left-toolbar-after"></slot>
         <div></div>
@@ -403,8 +403,8 @@
     top: 2px
 .task-icon
     position: absolute
-    top: 7px
-    left: 6px
+    top: 6px
+    left: 5px
 .line-icon
     position: absolute
     top: 7px
