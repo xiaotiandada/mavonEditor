@@ -11,14 +11,12 @@
                 <div class="v-note-op edit-toolbar" v-show="toolbarsFlag">
                     <v-md-toolbar 
                         ref="toolbar_left" 
-                        :editable="editable" 
                         :transition="transition" 
                         :d_words="d_words"
                         @toolbar_left_click="toolbar_left_click"
                         @toolbar_left_addlink="toolbar_left_addlink" 
                         @toolbar_toggle_click="toolbar_toggle_click"
                         :toolbars="toolbars"
-                        @imgAdd="$imgAdd" 
                         @imgDel="$imgDel" 
                         @imgTouch="$imgTouch" 
                         :image_filter="imageFilter"
@@ -29,24 +27,18 @@
                         <slot name="left-toolbar-after" slot="left-toolbar-after" />
                     </v-md-toolbar>
                 </div>
-                 <!-- @click="textAreaFocus" -->
                 <div class="edit-content">
                     <div class="content-input-wrapper">
                     <!-- 双栏 -->
-                    <v-autoTextarea ref="vNoteTextarea" :placeholder="placeholder ? placeholder : d_words.start_editor"
-                                    class="content-input" :fontSize="fontSize"
-                                    lineHeight="1.5" v-model="d_value" fullHeight
-                                    :style="{'position': 'fixed', 'top': 0, 'left': '0', height: '100px', display: 'none'}"></v-autoTextarea>
                     <codemirror 
-                        @scroll="$v_edit_scroll__left"
                         ref="myCm" 
                         class="codemirror-editor" 
-                        v-model="d_value"  
+                        v-model="d_value"
+                        @scroll="$v_edit_scroll__left"
                         @cursorActivity="onCursorActivity"
                         @beforeSelectionChange="onBeforeSelectionChange"
                         @changes="onChanges"
                         :options="cmOptions"></codemirror>
-                
                      </div>
                 </div>
                                     
@@ -82,8 +74,8 @@
                 <div v-show="s_navigation" class="v-note-navigation-wrapper" :class="{'transition': transition}">
                     <div class="v-note-navigation-title">
                         {{d_words.navigation_title}}<i @click="toolbar_right_click('navigation')"
-                                                       class="fa fa-mavon-times v-note-navigation-close"
-                                                       aria-hidden="true"></i>
+                        class="fa fa-mavon-times v-note-navigation-close"
+                        aria-hidden="true"></i>
                     </div>
                     <div ref="navigationContent" class="v-note-navigation-content" :class="{'scroll-style': s_scrollStyle}">
                     </div>
@@ -269,10 +261,6 @@ export default {
         defaultOpen: {
             type: String,
             default: null
-        },
-        editable: { // 是否开启编辑
-            type: Boolean,
-            default: true
         },
         toolbarsFlag: { // 是否开启工具栏
             type: Boolean,
@@ -574,10 +562,6 @@ export default {
         keydownListen(this);
         // 图片预览事件监听
         ImagePreviewListener(this);
-        // 设置默认焦点
-        if (this.autofocus) {
-            this.getTextareaDom().focus();
-        }
         // fullscreen事件
         fullscreenchange(this);
         console.log(11, this.value)
@@ -636,9 +620,6 @@ export default {
                 }
             }
         },
-        textAreaFocus() {
-            this.$refs.vNoteTextarea.$refs.vTextarea.focus();
-        },
         $drag($e) {
             var dataTransfer = $e.dataTransfer;
             if (dataTransfer) {
@@ -684,39 +665,6 @@ export default {
             this.d_value = this.d_value.replace(reg, '');
             this.iRender();
             this.$emit('imgDel', file);
-        },
-        $imgAdd(pos, $file, isinsert) {
-            if (isinsert === undefined) isinsert = true;
-            var $vm = this;
-            if (this.__rFilter == null) {
-                // this.__rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
-                this.__rFilter = /^image\//i;
-            }
-            this.__oFReader = new FileReader();
-            this.__oFReader.onload = function (oFREvent) {
-                $vm.markdownIt.image_add(pos, oFREvent.target.result);
-                $file.miniurl = oFREvent.target.result;
-                if (isinsert === true) {
-                    // 去除特殊字符
-                    $file._name = $file.name.replace(/[\[\]\(\)\+\{\}&\|\\\*^%$#@\-]/g, '');
-    
-                    $vm.insertText($vm.getTextareaDom(),
-                        {
-                            prefix: '![' + $file._name + '](' + pos + ')',
-                            subfix: '',
-                            str: ''
-                        });
-                    $vm.$nextTick(function () {
-                        $vm.$emit('imgAdd', pos, $file);
-                    })
-                }
-            }
-            if ($file) {
-                var oFile = $file;
-                if (this.__rFilter.test(oFile.type)) {
-                    this.__oFReader.readAsDataURL(oFile);
-                }
-            }
         },
         $imgUpdateByUrl(pos, url) {
             var $vm = this;
@@ -924,10 +872,6 @@ export default {
                 this.scrollSwitchRight = false
             }, 300)
         }, 5),
-        // 获取textarea dom节点
-        getTextareaDom() {
-            return this.$refs.vNoteTextarea.$refs.vTextarea;
-        },
         // 工具栏插入内容
         insertText(obj, {prefix, subfix, str, type}) {
             // if (this.s_preview_switch) {
@@ -967,12 +911,7 @@ export default {
         },
         // 编辑开关
         editableTextarea() {
-            let text_dom = this.$refs.vNoteTextarea.$refs.vTextarea;
-            if (this.editable) {
-                text_dom.removeAttribute('disabled');
-            } else {
-                text_dom.setAttribute('disabled', 'disabled');
-            }
+    
         },
         codeStyleChange(val, isInit) {
             isInit = isInit ? isInit : false;
@@ -1143,9 +1082,6 @@ export default {
         },
         language: function (val) {
             this.initLanguage();
-        },
-        editable: function () {
-            this.editableTextarea();
         },
         defaultOpen: function (val) {
             let default_open_ = val;

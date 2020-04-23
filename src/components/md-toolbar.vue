@@ -40,6 +40,9 @@
                 class="image op-icon fa fa-mavon-picture-o" aria-hidden="true">
             <input v-if="imageUploadAction !== 'default'" id="file" class="image-file" type="file" accept="image/*" @change="$upload($event)" multiple="multiple"/>
         </button>
+        <button :disabled="!editable" type="button" v-if="toolbars.table" @click="$clicks('table')"
+                class="op-icon fa fa-mavon-table" aria-hidden="true"
+                :title="`${d_words.tl_table} (ctrl+alt+t)`"></button>
         <button :disabled="!editable" type="button" v-if="toolbars.line" @click.stop="$clicks('line')"
                 class="op-icon icon-btn" aria-hidden="true">
                 <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#ccc"></path></svg>
