@@ -120,11 +120,13 @@ import utils from './lib/utils'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/keymap/sublime.js'
-// Hint
-import 'codemirror/addon/hint/show-hint'
-import 'codemirror/addon/hint/show-hint.css'
-import 'codemirror/addon/hint/anyword-hint'
+
+// 活跃行
 import 'codemirror/addon/selection/active-line.js'
+
+// import 'codemirror/addon/hint/show-hint.js'
+// import 'codemirror/addon/hint/show-hint.css'
+// import 'codemirror/addon/hint/anyword-hint.js'
 
 // foldGutter
 import 'codemirror/addon/fold/foldgutter.css'
@@ -144,6 +146,8 @@ import 'codemirror/addon/scroll/simplescrollbars.js'
 import 'codemirror/addon/search/matchesonscrollbar.css'
 // CloseBrackets
 import 'codemirror/addon/edit/closebrackets'
+// 括号匹配
+import 'codemirror/addon/edit/matchbrackets.js'
 
 // Mode
 import 'codemirror/mode/css/css'
@@ -1053,8 +1057,7 @@ export default {
         },
         onChanges(cm) {
             this.updateStatusBar()
-        }
-
+        },
     },
     computed: {
         codemirror() {
