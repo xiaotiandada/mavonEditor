@@ -20326,7 +20326,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
                                 console.log('file', files);
 
-                                document.querySelector('#file').setAttribute("type", "text");
+                                document.querySelector('#_toolbar-file').setAttribute("type", "text");
 
                                 i = 0, l = files.length;
 
@@ -20356,7 +20356,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                                 break;
 
                             case 14:
-                                document.querySelector('#file').setAttribute("type", "file");
+                                document.querySelector('#_toolbar-file').setAttribute("type", "file");
 
                             case 15:
                             case 'end':
@@ -42741,7 +42741,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [(_vm.imageUploadAction !== 'default') ? _c('input', {
     staticClass: "image-file",
     attrs: {
-      "id": "file",
+      "id": "_toolbar-file",
       "type": "file",
       "accept": "image/*",
       "multiple": "multiple"
