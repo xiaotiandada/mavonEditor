@@ -45,7 +45,6 @@ var tableOfContents = require('markdown-it-table-of-contents')
 // https://www.npmjs.com/package/markdown-it-container
 const miContainer = require('markdown-it-container')
 
-
 // add target="_blank" to all link
 var defaultRender = markdown.renderer.rules.link_open || function(tokens, idx, options, env, self) {
     return self.renderToken(tokens, idx, options);

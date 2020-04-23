@@ -65,8 +65,8 @@ export function insertLink (cm, isImage) {
     if (!range.empty()) {
       const from = range.from()
       const to = range.to()
-      const anchorIndex = editor.indexFromPos(ranges[i].anchor)
-      const headIndex = editor.indexFromPos(ranges[i].head)
+      const anchorIndex = cm.indexFromPos(ranges[i].anchor)
+      const headIndex = cm.indexFromPos(ranges[i].head)
       let selection = cm.getRange(from, to)
       selection = symbol + selection + linkEnd
       cm.replaceRange(selection, from, to)

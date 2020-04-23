@@ -13,17 +13,6 @@ export default md => {
     }
   }
 
-
-  function addPart(tokens, idx) {
-    if (tokens[idx].map && tokens[idx].level === 0) {
-      const startline = tokens[idx].map[0] + 1
-      const endline = tokens[idx].map[1]
-      tokens[idx].attrJoin('class', 'part')
-      tokens[idx].attrJoin('data-startline', startline)
-      tokens[idx].attrJoin('data-endline', endline)
-    }
-  }
-
   md.renderer.rules.blockquote_open = function (tokens, idx, options, env, self) {
     tokens[idx].attrJoin('class', 'raw')
     addPart(tokens, idx)
@@ -150,6 +139,4 @@ export default md => {
       }
     }
   })
-
-
 }
