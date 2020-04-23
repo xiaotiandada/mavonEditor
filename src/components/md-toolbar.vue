@@ -38,7 +38,7 @@
                 <!-- @click.stop="$clicks('imagelink')" -->
         <button :disabled="!editable" type="button" v-if="toolbars.imagelink" @click.stop="defaultImageUpload"
                 class="image op-icon fa fa-mavon-picture-o" aria-hidden="true">
-            <input v-if="imageUploadAction !== 'default'" id="file" class="image-file" type="file" accept="image/*" @change="$upload($event)" multiple="multiple"/>
+            <input v-if="imageUploadAction !== 'default'" id="_toolbar-file" class="image-file" type="file" accept="image/*" @change="$upload($event)" multiple="multiple"/>
         </button>
         <button :disabled="!editable" type="button" v-if="toolbars.table" @click="$clicks('table')"
                 class="op-icon fa fa-mavon-table" aria-hidden="true"
@@ -177,7 +177,7 @@ export default {
 
             console.log('file', files)
             // hack file 无法选择同一文件bug
-            document.querySelector('#file').setAttribute("type", "text");
+            document.querySelector('#_toolbar-file').setAttribute("type", "text");
 
             // 遍历所有文件
             for (let i = 0, l = files.length; i < l; i++) {
@@ -192,7 +192,7 @@ export default {
                 }
             }
             // hack file 无法选择同一文件bug
-            document.querySelector('#file').setAttribute("type", "file");
+            document.querySelector('#_toolbar-file').setAttribute("type", "file");
         },
         // 图片图片上传
         defaultImageUpload() {
