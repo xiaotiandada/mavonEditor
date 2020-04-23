@@ -311,7 +311,7 @@ export const toolbar = (_type, $vm, data) => {
         insertLink(editor, false)
     } else if (_type === 'imagelink') {
         if (data.action === 'default') {
-            insertLink(editor, false)
+            insertLink(editor, true)
         } else {
             insertText(editor, `\n![${data.title}](${data.url})\n`)
         }

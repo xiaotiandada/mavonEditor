@@ -758,7 +758,6 @@ export default {
             toolbar_right_click(_type, this);
         },
         toolbar_toggle_click(_type) {
-            console.log(_type, 111)
             toolbar_right_click(_type, this);
         },
         getNavigation($vm, full) {
