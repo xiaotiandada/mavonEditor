@@ -1,5 +1,5 @@
 <template>
-    <div :class="[{ 'fullscreen': s_fullScreen, 'shadow': boxShadow }]" class="v-note-wrapper markdown-body">
+    <div class="v-note-wrapper markdown-body">
         <!--编辑展示区域-->
         <div class="v-note-panel">
             <!--编辑区-->
@@ -127,6 +127,7 @@ import 'codemirror/addon/selection/active-line.js'
 // import 'codemirror/addon/hint/show-hint.js'
 // import 'codemirror/addon/hint/show-hint.css'
 // import 'codemirror/addon/hint/anyword-hint.js'
+// import 'codemirror/addon/hint/javascript-hint.js'
 
 // foldGutter
 import 'codemirror/addon/fold/foldgutter.css'
@@ -1167,4 +1168,6 @@ export default {
     overflow-x: hidden !important;
     overflow-y: auto !important;
 }
+
+
 </style>
