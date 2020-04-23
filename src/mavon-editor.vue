@@ -1,24 +1,5 @@
 <template>
-    <div :class="[{ 'fullscreen': s_fullScreen, 'shadow': boxShadow }]" class="v-note-wrapper markdown-body" :style="{'box-shadow': boxShadow ? boxShadowStyle : ''}">
-        <!--工具栏-->
-        <div class="head-toolbar" >
-            <div>
-                <slot slot="head-toolbar-left" />
-            </div>
-            <v-md-head-toolbar-right 
-                ref="toolbar_right" 
-                :d_words="d_words"
-                @toolbar_right_click="toolbar_right_click"
-                :toolbars="toolbars"
-                :s_subfield="s_subfield"
-                :s_preview_switch="s_preview_switch" :s_fullScreen="s_fullScreen"
-                :s_html_code="s_html_code"
-                :s_navigation="s_navigation"
-                :class="{'transition': transition}">
-                <slot slot="head-toolbar-right-before" />
-                <slot slot="head-toolbar-right-after" />
-            </v-md-head-toolbar-right>
-        </div>
+    <div :class="[{ 'fullscreen': s_fullScreen, 'shadow': boxShadow }]" class="v-note-wrapper markdown-body">
         <!--编辑展示区域-->
         <div class="v-note-panel">
             <!--编辑区-->
@@ -35,12 +16,15 @@
                         :d_words="d_words"
                         @toolbar_left_click="toolbar_left_click"
                         @toolbar_left_addlink="toolbar_left_addlink" 
+                        @toolbar_toggle_click="toolbar_toggle_click"
                         :toolbars="toolbars"
                         @imgAdd="$imgAdd" 
                         @imgDel="$imgDel" 
                         @imgTouch="$imgTouch" 
                         :image_filter="imageFilter"
-                        :class="{'transition': transition}">
+                        :imageUploadAction="imageUploadAction"
+                        :imageUploadFn="imageUploadFn"
+                        >
                         <slot name="left-toolbar-before" slot="left-toolbar-before" />
                         <slot name="left-toolbar-after" slot="left-toolbar-after" />
                     </v-md-toolbar>
@@ -73,6 +57,10 @@
                                 <span class="status-selection" v-show="statusBar.select > 0"> — 已选择 {{statusBar.select}} 行</span>    
                             </div>        
                             <div class="status-file"> — 共 {{statusBar.count}} 行</div>   
+                         </div>
+
+                         <div class="status-other">
+                            <div class="help op-icon fa fa-mavon-question-circle" @click="toolbar_right_click('help')"></div>
                          </div>
                     </div>
             </div>
@@ -329,6 +317,19 @@ export default {
         shortCut:{
             type: Boolean,
             default: true
+        },
+        // 上传图片动作
+        // default 默认行为是写入markdown标签
+        // customize 根据自定义的路径上传图片
+        imageUploadAction: {
+            type: String,
+            default: 'default'
+            // default: 'customize'
+        },
+        // 图片上传方法
+        imageUploadFn: {
+            type: Function,
+            default: () => {}
         }
     },
     data() {
@@ -746,14 +747,18 @@ export default {
                 }
             }
         },
-        toolbar_left_click(_type) {
+        toolbar_left_click(_type, data = null) {
             // toolbar_left_click(_type, this);
-            toolbar(_type, this)
+            toolbar(_type, this, data)
         },
         toolbar_left_addlink(_type, text, link) {
             toolbar_left_addlink(_type, text, link, this);
         },
         toolbar_right_click(_type) {
+            toolbar_right_click(_type, this);
+        },
+        toolbar_toggle_click(_type) {
+            console.log(_type, 111)
             toolbar_right_click(_type, this);
         },
         getNavigation($vm, full) {

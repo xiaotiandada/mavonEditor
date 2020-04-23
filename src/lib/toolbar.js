@@ -275,7 +275,7 @@ function insertLink (cm, isImage) {
       }
     }
     cm.focus()
-  }
+}
 // 插入文字
 function insertText (cm, text, cursorEnd = 0) {
     const cursor = cm.getCursor()
@@ -283,8 +283,8 @@ function insertText (cm, text, cursorEnd = 0) {
     cm.focus()
     cm.setCursor({ line: cursor.line, ch: cursor.ch + cursorEnd })
 }
-export const toolbar = (_type, $vm) => {
-    console.log('1', _type)
+export const toolbar = (_type, $vm, data) => {
+    console.log('type', _type)
     const editor = $vm.codemirror
 
     const insertSymbolType = {
@@ -310,7 +310,11 @@ export const toolbar = (_type, $vm) => {
     } else if (_type === 'link') {
         insertLink(editor, false)
     } else if (_type === 'imagelink') {
-        insertLink(editor, true)
+        if (data.action === 'default') {
+            insertLink(editor, false)
+        } else {
+            insertText(editor, `\n![${data.title}](${data.url})\n`)
+        }
     } else if (_type === 'table') {
         insertText(editor, '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n')
     } else if (_type === 'line') {

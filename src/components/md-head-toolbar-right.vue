@@ -8,7 +8,7 @@
                         <div @click="$clicks('compared')" :class="toggleRadio === 'compared'  && 'active'" class="toggle-item op-icon fa fa-mavon-columns"></div>
                         <div @click="$clicks('view')" :class="toggleRadio === 'view'  && 'active'" class="toggle-item op-icon fa fa-mavon-eye"></div>
                 </div>
-                <div class="help op-icon fa fa-mavon-question-circle" @click="$clicks('help')"></div>
+                <!-- <div class="help op-icon fa fa-mavon-question-circle" @click="$clicks('help')"></div> -->
                 <slot name="right-toolbar-after" />
 
         <!-- <button type="button" v-if="toolbars.navigation" @click="$clicks('navigation')" v-show="!s_navigation"
