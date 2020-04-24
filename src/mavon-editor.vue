@@ -143,6 +143,10 @@ import 'codemirror/addon/dialog/dialog.css'
 
 import 'codemirror/addon/scroll/simplescrollbars.css'
 import 'codemirror/addon/scroll/simplescrollbars.js'
+
+// placeholder
+import 'codemirror/addon/display/placeholder.js'
+
 // serch
 import 'codemirror/addon/search/matchesonscrollbar.css'
 // CloseBrackets
@@ -525,7 +529,8 @@ export default {
                 // readOnly: true,
                 // autoRefresh: true,
                 otherCursors: true,
-                scrollbarStyle: 'overlay'
+                scrollbarStyle: 'overlay',
+                placeholder: '在此输入内容\n\n现在就开始编辑吧！'
             },
             // 滚动开关
             scrollSwitchLeft: false,
@@ -569,7 +574,6 @@ export default {
         ImagePreviewListener(this);
         // fullscreen事件
         fullscreenchange(this);
-        console.log(11, this.value)
         this.d_value = this.value;
         // 将help添加到末尾
         document.body.appendChild(this.$refs.help);
@@ -789,7 +793,12 @@ export default {
             }
             // 公共变量
             const deviation = 10 // 偏差距离
-            const showContent = document.querySelector('.v-show-content') // 预览高度
+            const showContent = document.querySelector('.v-show-content') // 预览Dom
+
+            // this.codemirror.display.lineNumInnerWidt 找不到height, 文档也没有写 因为不想写死24 所以在object找到了一个var
+            const lineNumInnerWidth = this.codemirror.display.lineNumInnerWidth || 24
+            // 如果行高 高得离谱.....
+            const lineHeight = lineNumInnerWidth <= 48 ? lineNumInnerWidth : 24 // 获取行高
 
             if (side === 'left') {
                 // console.log('scrollSwitchRight', this.scrollSwitchRight)
@@ -814,7 +823,6 @@ export default {
                 // 总行数
                 const lineCount = this.codemirror.lineCount()
 
-                const lineHeight = 24 // 写死的行高
                 const line = Math.floor(scrollInfo.top / lineHeight) + 1
 
                 // todo 到底部判断
@@ -845,7 +853,7 @@ export default {
                 // 判断到达底部
                 if (showContent.scrollTop >= (showContent.scrollHeight - showContent.clientHeight - deviation)) {
                     const lineCount = this.codemirror.lineCount()
-                    this.codemirror.scrollTo(null, lineCount * 24)
+                    this.codemirror.scrollTo(null, lineCount * lineHeight)
                     return
                 }
     
@@ -853,7 +861,7 @@ export default {
                     let line = lineMarkers[i]
                     let dataLine = line.getAttribute('data-startline')
                     if (line.offsetTop >= viewParentScroll) {
-                        this.codemirror.scrollTo(null, (dataLine * 24 - 24))
+                        this.codemirror.scrollTo(null, (dataLine * lineHeight - lineHeight))
                         break;
                     }
                 }
@@ -1058,7 +1066,7 @@ export default {
         },
         onChanges(cm) {
             this.updateStatusBar()
-        },
+        }
     },
     computed: {
         codemirror() {
@@ -1169,5 +1177,8 @@ export default {
     overflow-y: auto !important;
 }
 
+.CodeMirror-placeholder {
+    color: #777 !important;
+}
 
 </style>
