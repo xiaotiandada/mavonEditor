@@ -1,55 +1,57 @@
 <template>
 <div class="v-left-item">
-    <div>
-        <slot name="left-toolbar-before" />
-        <button :disabled="!editable" type="button" v-if="toolbars.bold" @click="$clicks('bold')"
-                class="op-icon fa fa-mavon-bold" aria-hidden="true"
-                :title="`${d_words.tl_bold} (ctrl+b)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.italic" @click="$clicks('italic')"
-                class="op-icon fa fa-mavon-italic" aria-hidden="true"
-                :title="`${d_words.tl_italic} (ctrl+i)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.strikethrough" @click="$clicks('strikethrough')"
-                class="op-icon fa fa-mavon-strikethrough"
-                :title="`${d_words.tl_strikethrough} (ctrl+shift+d)`" aria-hidden="true"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.header" @click="$clicks('header')"
-                class="op-icon fa fa-mavon-header" aria-hidden="true"
-                :title="`${d_words.tl_header} (ctrl+h)`"></button>
-        <span v-if="toolbars.header || toolbars.italic || toolbars.bold || toolbar.strikethrough" class="op-icon-divider"></span>
-        <button :disabled="!editable" type="button" v-if="toolbars.code" @click="$clicks('code')"
-                class="op-icon fa fa-mavon-code" aria-hidden="true"
-                :title="`${d_words.tl_code} (ctrl+alt+c)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.quote" @click="$clicks('quote')"
-                class="op-icon fa fa-mavon-quote-left" aria-hidden="true"
-                :title="`${d_words.tl_quote} (ctrl+q)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.ol" @click="$clicks('ol')"
-                class="op-icon fa fa-mavon-list-ol" aria-hidden="true"
-                :title="`${d_words.tl_ol} (ctrl+o)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.ul" @click="$clicks('ul')"
-                class="op-icon fa fa-mavon-list-ul" aria-hidden="true"
-                :title="`${d_words.tl_ul} (ctrl+alt+u)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.task" @click="$clicks('task')"
-                class="op-icon icon-btn" aria-hidden="true">
-                <svg t="1587552064824" class="task-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7961" width="200" height="200"><path d="M896 64H128a64 64 0 0 0-64 64v768a64 64 0 0 0 64 64h768a64 64 0 0 0 64-64V128a64 64 0 0 0-64-64z m-162.368 292.16l-223.36 358.784a44.864 44.864 0 0 1-35.904 20.928c-0.576 0.128-1.344 0.128-1.984 0.128a44.992 44.992 0 0 1-35.648-17.664L292.608 537.472a44.608 44.608 0 0 1 71.104-53.888l105.088 129.152 189.248-303.744a44.544 44.544 0 1 1 75.584 47.168z" p-id="7962" fill="#ccc"></path></svg>
-                </button>
-        <span v-if="toolbars.code || toolbars.quote || toolbars.ol || toolbar.ul || toolbar.task" class="op-icon-divider"></span>
-        <button :disabled="!editable" type="button" v-if="toolbars.link" @click.stop="$clicks('link')"
-                class="op-icon fa fa-mavon-link" aria-hidden="true"
-                :title="`${d_words.tl_link} (ctrl+l)`"></button>
-                <!-- @click.stop="$clicks('imagelink')" -->
-        <button :disabled="!editable" type="button" v-if="toolbars.imagelink" @click.stop="defaultImageUpload"
-                class="image op-icon fa fa-mavon-picture-o" aria-hidden="true">
-            <input v-if="imageUploadAction !== 'default'" id="_toolbar-file" class="image-file" type="file" accept="image/*" @change="$upload($event)" multiple="multiple"/>
-        </button>
-        <button :disabled="!editable" type="button" v-if="toolbars.table" @click="$clicks('table')"
-                class="op-icon fa fa-mavon-table" aria-hidden="true"
-                :title="`${d_words.tl_table} (ctrl+alt+t)`"></button>
-        <button :disabled="!editable" type="button" v-if="toolbars.line" @click.stop="$clicks('line')"
-                class="op-icon icon-btn" aria-hidden="true">
-                <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#ccc"></path></svg>
-        </button>
-        <slot name="left-toolbar-after"></slot>
+    <div class="toolbar-left">
+        <div class="toolbar-btn">
+            <slot name="left-toolbar-before" />
+            <button :disabled="!editable" type="button" v-if="toolbars.bold" @click="$clicks('bold')"
+                    class="op-icon fa fa-mavon-bold" aria-hidden="true"
+                    :title="`${d_words.tl_bold} (ctrl+b)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.italic" @click="$clicks('italic')"
+                    class="op-icon fa fa-mavon-italic" aria-hidden="true"
+                    :title="`${d_words.tl_italic} (ctrl+i)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.strikethrough" @click="$clicks('strikethrough')"
+                    class="op-icon fa fa-mavon-strikethrough"
+                    :title="`${d_words.tl_strikethrough} (ctrl+shift+d)`" aria-hidden="true"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.header" @click="$clicks('header')"
+                    class="op-icon fa fa-mavon-header" aria-hidden="true"
+                    :title="`${d_words.tl_header} (ctrl+h)`"></button>
+            <span v-if="toolbars.header || toolbars.italic || toolbars.bold || toolbar.strikethrough" class="toolbar-line"></span>
+            <button :disabled="!editable" type="button" v-if="toolbars.code" @click="$clicks('code')"
+                    class="op-icon fa fa-mavon-code" aria-hidden="true"
+                    :title="`${d_words.tl_code} (ctrl+alt+c)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.quote" @click="$clicks('quote')"
+                    class="op-icon fa fa-mavon-quote-left" aria-hidden="true"
+                    :title="`${d_words.tl_quote} (ctrl+q)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.ol" @click="$clicks('ol')"
+                    class="op-icon fa fa-mavon-list-ol" aria-hidden="true"
+                    :title="`${d_words.tl_ol} (ctrl+o)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.ul" @click="$clicks('ul')"
+                    class="op-icon fa fa-mavon-list-ul" aria-hidden="true"
+                    :title="`${d_words.tl_ul} (ctrl+alt+u)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.task" @click="$clicks('task')"
+                    class="op-icon icon-btn" aria-hidden="true">
+                    <svg t="1587552064824" class="task-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7961" width="200" height="200"><path d="M896 64H128a64 64 0 0 0-64 64v768a64 64 0 0 0 64 64h768a64 64 0 0 0 64-64V128a64 64 0 0 0-64-64z m-162.368 292.16l-223.36 358.784a44.864 44.864 0 0 1-35.904 20.928c-0.576 0.128-1.344 0.128-1.984 0.128a44.992 44.992 0 0 1-35.648-17.664L292.608 537.472a44.608 44.608 0 0 1 71.104-53.888l105.088 129.152 189.248-303.744a44.544 44.544 0 1 1 75.584 47.168z" p-id="7962" fill="#ccc"></path></svg>
+                    </button>
+            <span v-if="toolbars.code || toolbars.quote || toolbars.ol || toolbar.ul || toolbar.task" class="toolbar-line"></span>
+            <button :disabled="!editable" type="button" v-if="toolbars.link" @click.stop="$clicks('link')"
+                    class="op-icon fa fa-mavon-link" aria-hidden="true"
+                    :title="`${d_words.tl_link} (ctrl+l)`"></button>
+                    <!-- @click.stop="$clicks('imagelink')" -->
+            <button :disabled="!editable" type="button" v-if="toolbars.imagelink" @click.stop="defaultImageUpload"
+                    class="image op-icon fa fa-mavon-picture-o" aria-hidden="true">
+                <input v-if="imageUploadAction !== 'default'" id="_toolbar-file" class="image-file" type="file" accept="image/*" @change="$upload($event)" multiple="multiple"/>
+            </button>
+            <button :disabled="!editable" type="button" v-if="toolbars.table" @click="$clicks('table')"
+                    class="op-icon fa fa-mavon-table" aria-hidden="true"
+                    :title="`${d_words.tl_table} (ctrl+alt+t)`"></button>
+            <button :disabled="!editable" type="button" v-if="toolbars.line" @click.stop="$clicks('line')"
+                    class="op-icon icon-btn" aria-hidden="true">
+                    <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#ccc"></path></svg>
+            </button>
+            <slot name="left-toolbar-after"></slot>
+        </div>
     </div>
-    <div>
+    <div class="toolbar-right">
         <button :disabled="!editable" type="button" @click.stop="$clickToggle('edit')"
             class="op-icon icon-btn" aria-hidden="true">
             <svg t="1587538645109" class="edit-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3796" width="200" height="200"><path d="M64.5 927.7c-3.7 18.7 13.1 35.5 31.8 31.8l203.8-48.6c7.5-1.9 13.1-5.6 16.8-9.3l3.7-3.7c3.7-3.7 5.6-16.8-1.9-24.3L150.5 705.2c-7.5-7.5-20.6-5.6-24.3-1.9l-3.7 3.7c-5.6 5.6-7.5 11.2-9.3 16.8L64.5 927.7z m635.7-794.6c-7.5 7.5-7.5 18.7 0 26.2l164.5 164.5c7.5 7.5 18.7 7.5 26.2 0l46.7-46.7c29.9-28 29.9-72.9 0-102.8l-87.9-87.9c-29.9-29.9-76.7-29.9-106.6 0l-42.9 46.7zM202.8 651l166.4 166.4c7.5 7.5 18.7 7.5 26.2 0l415.1-416.9c7.5-7.5 7.5-18.7 0-26.2L645.9 209.8c-7.5-7.5-18.7-7.5-26.2 0L202.8 626.7c-7.4 7.5-7.4 18.7 0 24.3z" p-id="3797" fill="#ccc"></path></svg>
@@ -480,25 +482,42 @@ export default {
 
 .icon-btn
     position: relative
-    top: 2px
-.task-icon
-    position: absolute
-    top: 6px
-    left: 5px
-.line-icon
-    position: absolute
-    top: 7px
-    left: 6px
+.task-icon,
+.line-icon,
 .edit-icon
     position: absolute
-    top: 5px;
-    left: 5px;
+    top: 5px
+    left: 5px
 
 .v-left-item 
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
+    width: 100%;
+    box-sizing border-box
+    .op-icon
+        margin: 0 2px;
+    .toolbar-left,
+    .toolbar-right
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    .toolbar-left
+        width: calc(100% - 80px)
+        .toolbar-btn
+            min-width 400px
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+
+    .toolbar-right
+        min-width 80px
+        justify-content flex-end
+    .toolbar-line
+        border-left: 1px solid #4d4d4d
+        height 22px
+        margin 0 6px
 .image
     overflow hidden
     position relative
