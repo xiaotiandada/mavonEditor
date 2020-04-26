@@ -30,11 +30,13 @@
                 <div class="edit-content">
                     <div class="content-input-wrapper">
                     <!-- 双栏 -->
+                        <!-- @scroll="$v_edit_scroll__left" -->
+
                     <codemirror 
                         ref="myCm" 
                         class="codemirror-editor" 
                         v-model="d_value"
-                        @scroll="$v_edit_scroll__left"
+                        @ready="onReady"
                         @cursorActivity="onCursorActivity"
                         @beforeSelectionChange="onBeforeSelectionChange"
                         @changes="onChanges"
@@ -59,7 +61,8 @@
             <!--展示区-->
             <div :class="{'single-show': (!s_subfield && s_preview_switch) || (!s_subfield && s_html_code)}"
                  v-show="s_preview_switch || s_html_code" class="v-note-show">
-                <div @scroll="$v_edit_scroll__right" ref="vShowContent" v-html="d_render" v-show="!s_html_code"
+                  <!-- @scroll="$v_edit_scroll__right" -->
+                <div id="previewContent" ref="vShowContent" v-html="d_render" v-show="!s_html_code"
                      :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content"
                      >
                 </div>
@@ -554,9 +557,9 @@ export default {
             // 初始化Textarea编辑开关
             $vm.editableTextarea();
 
-            setTimeout(() => {
-                window.codemirror = this.codemirror
-            }, 2000)
+            // setTimeout(() => {
+            //     window.codemirror = this.codemirror
+            // }, 2000)
         })
     },
     mounted() {
@@ -795,10 +798,9 @@ export default {
             const deviation = 10 // 偏差距离
             const showContent = document.querySelector('.v-show-content') // 预览Dom
 
-            // this.codemirror.display.lineNumInnerWidt 找不到height, 文档也没有写 因为不想写死24 所以在object找到了一个var
-            const lineNumInnerWidth = this.codemirror.display.lineNumInnerWidth || 24
+            const defaultTextHeight = this.codemirror.defaultTextHeight() || 24
             // 如果行高 高得离谱.....
-            const lineHeight = lineNumInnerWidth <= 48 ? lineNumInnerWidth : 24 // 获取行高
+            const lineHeight = defaultTextHeight <= 48 ? defaultTextHeight : 24 // 获取行高
 
             if (side === 'left') {
                 // console.log('scrollSwitchRight', this.scrollSwitchRight)
@@ -885,6 +887,133 @@ export default {
                 this.scrollSwitchRight = false
             }, 300)
         }, 5),
+        // 试试简书的
+        bindScroll() {
+            var spSwitchMain; // 切换的那个按钮所在的窗体
+            var txtMain;      // 输入框
+            var spPreview;    // 预览框
+
+            const SWITCH_FEATURE   = 'a.fa.fa-columns';
+            const EXPAND_FEATURE   = 'a.fa.fa-expand';
+            const COMPRESS_FEATURE = 'a.fa.fa-compress';
+
+            let getInput = document.querySelector('.CodeMirror-scroll');
+            let getPreview = document.querySelector('#previewContent');
+
+            const scrollEvent = () => {
+                txtMain = getInput
+                spPreview = getPreview
+
+                if (txtMain === undefined) {
+                return;
+                }
+                if (spPreview === undefined) {
+                return;
+                }
+
+                let mainFlag = false; // 抵消两个滚动事件之间互相触发
+                let preFlag = false; // 如果两个 flag 都为 true，证明是反弹过来的事件引起的
+
+            const scrolling = (who) => {
+                // 滚动信息
+                const scrollInfo = this.codemirror.getScrollInfo()
+
+                // 设置右侧滚动
+                const setPreview = (dom, scrollTop) => {
+                    try {
+                        anime({
+                            targets: dom,
+                            scrollTop: scrollTop,
+                            duration: 100,
+                            easing: 'linear'
+                        });
+                    } catch (e) {
+                        console.log(e)
+                        dom.scrollTop = scrollTop
+                    }
+                }
+
+                if (who === 'pre') {
+                    // 判断到达顶部
+                    if (getPreview.scrollTop <= 0) {
+                        this.codemirror.scrollTo(null, 0)
+                        return
+                    }
+
+                    // 判断到达底部
+                    if (getPreview.scrollTop >= (getPreview.scrollHeight - getPreview.clientHeight)) {
+                        this.codemirror.scrollTo(null, scrollInfo.height - scrollInfo.clientHeight)
+                        return
+                    }
+
+                    preFlag = true;
+                    if (mainFlag === true) { // 抵消两个滚动事件之间互相触发
+                        mainFlag = false;
+                        preFlag = false;
+                        return;
+                    }
+                    // console.log('pre??')
+
+                    const scrollTopNumber = Math.round((spPreview.scrollTop + spPreview.clientHeight) * txtMain.scrollHeight  / spPreview.scrollHeight - txtMain.clientHeight);
+                    // console.log(scrollTopNumber)
+                    this.codemirror.scrollTo(null, scrollTopNumber)
+                    // txtMain.scrollTop = scrollTop
+                    return;
+                }
+                if (who === 'main') {
+                    mainFlag = true;
+                    if (preFlag === true) { // 抵消两个滚动事件之间互相触发
+                        mainFlag = false;
+                        preFlag = false;
+                        return;
+                    }
+
+                    // 判断到达顶部
+                    if (scrollInfo.top <= 0) {
+                        // setPreview(spPreview, 0)
+                        spPreview.scrollTop = 0
+                        return
+                    }
+
+                    // 判断到达底部
+                    if (scrollInfo.top >= (scrollInfo.height - scrollInfo.clientHeight)) {
+                        let scrollTop = spPreview.scrollHeight
+                        // setPreview(spPreview, scrollTop)
+                        spPreview.scrollTop = spPreview.scrollHeight
+                        return
+                    }
+
+                    // console.log('main??', scrollInfo)
+
+                    const scrollTopNumber = Math.round((txtMain.scrollTop + txtMain.clientHeight) * spPreview.scrollHeight / txtMain.scrollHeight - spPreview.clientHeight);
+    
+                    spPreview.scrollTop = scrollTopNumber
+                    }
+                }
+
+                const mainOnscroll = () => {
+                    scrolling('main');
+                }
+
+                const preOnscroll = () => {
+                    scrolling('pre');
+                }
+
+                txtMain.addEventListener('scroll', throttle(mainOnscroll, 5))
+                spPreview.addEventListener('scroll', throttle(preOnscroll, 5))
+            }
+
+            function cycle() {
+                scrollEvent();
+                // $(EXPAND_FEATURE).on('click', scrollEvent);
+                // $(COMPRESS_FEATURE).on('click', scrollEvent);
+                // $(SWITCH_FEATURE).on("click", scrollEvent);
+
+                // window.setTimeout(cycle, 1000);
+            }
+
+            cycle();
+        },
         // 工具栏插入内容
         insertText(obj, {prefix, subfix, str, type}) {
             // if (this.s_preview_switch) {
@@ -1066,6 +1195,9 @@ export default {
         },
         onChanges(cm) {
             this.updateStatusBar()
+        },
+        onReady() {
+            this.bindScroll()
         }
     },
     computed: {
