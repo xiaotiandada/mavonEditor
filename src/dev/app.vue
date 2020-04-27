@@ -23,6 +23,7 @@
         :transition="true"
         imageUploadAction="customize"
         :imageUploadFn="imageUploadFn"
+        :encryption="encryption"
       >
       </mavon-editor>
   </div>
@@ -112,7 +113,8 @@ export default {
             imageClick: function (file) {
                 console.log(file);
             },
-            imgName: ''
+            imgName: '',
+            encryption: '\n\n[read hold="SYMBOL amount"]\n\n隐藏内容\n\n[else]\n\n预览内容\n\n[/read]\n'
         }
     },
     created () {

@@ -22,6 +22,7 @@
                         :image_filter="imageFilter"
                         :imageUploadAction="imageUploadAction"
                         :imageUploadFn="imageUploadFn"
+                        :encryption="encryption"
                         >
                         <slot name="left-toolbar-before" slot="left-toolbar-before" />
                         <slot name="left-toolbar-after" slot="left-toolbar-after" />
@@ -330,6 +331,11 @@ export default {
         imageUploadFn: {
             type: Function,
             default: () => {}
+        },
+        // 加密语法内容
+        encryption: {
+            type: String,
+            default: ''
         }
     },
     data() {

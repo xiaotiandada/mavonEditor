@@ -319,6 +319,9 @@ export const toolbar = (_type, $vm, data) => {
         insertText(editor, '\n\n| Column 1 | Column 2 | Column 3 |\n| -------- | -------- | -------- |\n| Text     | Text     | Text     |\n')
     } else if (_type === 'line') {
         insertText(editor, '\n----\n')
+    } else if (_type === 'encryption') {
+        // insertText(editor, '\n\n[read hold="SYMBOL amount"]\n\n隐藏内容\n\n[else]\n\n预览内容\n\n[/read]\n')
+        insertText(editor, data.string)
     } else {
 
     }

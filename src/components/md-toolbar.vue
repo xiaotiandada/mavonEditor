@@ -48,6 +48,11 @@
                     class="op-icon icon-btn" aria-hidden="true">
                     <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#ccc"></path></svg>
             </button>
+            <button :disabled="!editable" type="button" v-if="toolbars.encryption" @click.stop="$clickEncryption('encryption')"
+                    title="插入加密内容"
+                    class="op-icon icon-btn" aria-hidden="true">
+                    <svg t="1587969444818" class="lock-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1130" width="200" height="200"><path d="M256 448V320a256 256 0 0 1 512 0v128h64a64 64 0 0 1 64 64v448a64 64 0 0 1-64 64H192a64 64 0 0 1-64-64V512a64 64 0 0 1 64-64h64z m224.448 346.688a29.248 29.248 0 0 0-0.448 5.312v64a32 32 0 0 0 64 0v-64a29.248 29.248 0 0 0-0.448-5.312 96 96 0 1 0-63.104 0zM512 192a128 128 0 0 0-128 128v128h256V320a128 128 0 0 0-128-128z" fill="#ccc" p-id="1131"></path></svg>
+            </button>
             <slot name="left-toolbar-after"></slot>
         </div>
     </div>
@@ -99,6 +104,11 @@ export default {
         imageUploadFn: {
             type: Function,
             default: () => {}
+        },
+        // 加密语法内容
+        encryption: {
+            type: String,
+            default: ''
         }
     },
     data() {
@@ -295,6 +305,14 @@ export default {
                 this.$emit('toolbar_toggle_click', _type);
             }
         },
+        $clickEncryption(_type) {
+            // 让父节点来绑定事件并
+            if (this.editable) {
+                this.$emit('toolbar_left_click', _type, {
+                    string: this.encryption
+                });
+            }
+        },
         $click_header(_type) {
             // 让父节点来绑定事件并
             this.$emit('toolbar_left_click', _type);
@@ -484,10 +502,14 @@ export default {
     position: relative
 .task-icon,
 .line-icon,
-.edit-icon
+.edit-icon,
+.lock-icon
     position: absolute
     top: 5px
     left: 5px
+    font-size: 16px
+    width: 1em
+    height: 1em
 
 .v-left-item 
     display: flex;
