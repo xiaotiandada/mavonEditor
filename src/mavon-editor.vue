@@ -1,12 +1,10 @@
 <template>
-    <div class="v-note-wrapper markdown-body">
+    <div class="v-note-wrapper">
         <!--编辑展示区域-->
         <div class="v-note-panel">
             <!--编辑区-->
             <!-- @scroll="$v_edit_scroll" -->
-            <div ref="vNoteEdit" class="v-note-edit divarea-wrapper"
-                 :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle && !s_preview_switch && !s_html_code, 'single-edit': !s_preview_switch && !s_html_code, 'single-show': (!s_subfield && s_preview_switch) || (!s_subfield && s_html_code), 'transition': transition}"
-                 >
+            <div ref="vNoteEdit" class="v-note-edit divarea-wrapper">
                 <!--工具栏-->
                 <div class="v-note-op edit-toolbar" v-show="toolbarsFlag">
                     <v-md-toolbar 
@@ -32,7 +30,6 @@
                     <div class="content-input-wrapper">
                     <!-- 双栏 -->
                         <!-- @scroll="$v_edit_scroll__left" -->
-
                     <codemirror 
                         ref="myCm" 
                         class="codemirror-editor" 
@@ -64,7 +61,7 @@
                  v-show="s_preview_switch || s_html_code" class="v-note-show">
                   <!-- @scroll="$v_edit_scroll__right" -->
                 <div id="previewContent" ref="vShowContent" v-html="d_render" v-show="!s_html_code"
-                     :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content"
+                     :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content markdown-body"
                      >
                 </div>
                 <div v-show="s_html_code" :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content-html spoiler"
@@ -112,6 +109,7 @@
         </div>
     </div>
 </template>
+
 <script>
     // import tomarkdown from './lib/core/to-markdown.js'
 import {autoTextarea} from 'auto-textarea'
@@ -128,10 +126,14 @@ import 'codemirror/keymap/sublime.js'
 // 活跃行
 import 'codemirror/addon/selection/active-line.js'
 
-// import 'codemirror/addon/hint/show-hint.js'
-// import 'codemirror/addon/hint/show-hint.css'
-// import 'codemirror/addon/hint/anyword-hint.js'
-// import 'codemirror/addon/hint/javascript-hint.js'
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/show-hint.js'
+
+// 提示
+import 'codemirror/addon/hint/anyword-hint.js'
+import 'codemirror/addon/hint/javascript-hint.js'
+import 'codemirror/addon/hint/html-hint.js'
+import 'codemirror/addon/hint/css-hint.js'
 
 // foldGutter
 import 'codemirror/addon/fold/foldgutter.css'
@@ -539,7 +541,8 @@ export default {
                 // autoRefresh: true,
                 otherCursors: true,
                 scrollbarStyle: 'overlay',
-                placeholder: '在此输入内容\n\n现在就开始编辑吧！'
+                placeholder: '在此输入内容\n\n现在就开始编辑吧！',
+                extraKeys: { Ctrl: "autocomplete" }, //ctrl可以弹出选择项
             },
             // 滚动开关
             scrollSwitchLeft: false,
@@ -1202,6 +1205,51 @@ export default {
         },
         onCursorActivity(cm) {
             this.updateStatusBar()
+
+            // todo 目前只做了 emoji 的 base 等待扩展
+
+            // emoji
+            // console.log(cm.getCursor())
+            // console.log(cm.getDoc().getCursor())
+            let cursor = cm.getCursor()
+            let cursorValue = cm.getLine(cursor.line)
+            let cursorValueLen = cursorValue.length
+            let cursorValueText = cursorValue.slice(cursorValueLen - 2)
+
+            // console.log(cursorValue)
+            // console.log(cursorValueText)
+            var options = {
+                hint: function() {
+                    return {
+                        from: cm.getDoc().getCursor(),
+                        to: cm.getDoc().getCursor(),
+                        list: [
+                            {
+                                text: 'smile: ',
+                                displayText: '😄 smile'
+                            },
+                            {
+                                text: 'smiley: ',
+                                displayText: '😃 smiley'
+                            },
+                        ],
+                    }
+                }
+            }
+
+            // 当前行已经有了:x: / :+空格
+            if (cursorValueText === ': ') {
+                return
+            }
+
+            // 顶头+:  空格+:
+            // x+空格+:
+            if (cursorValue.trim() === ':' || cursorValueText.trim() === ':') {
+                cm.showHint(options)
+                return
+            }
+
+
         },
         onBeforeSelectionChange(cm) {
             this.updateStatusBar()
@@ -1211,8 +1259,9 @@ export default {
             // 锁定 scrollSwitch
             this.scrollSwitch = true
         },
-        onReady() {
+        onReady(cm) {
             this.bindScroll()
+            window.cm = cm
         }
     },
     computed: {
@@ -1265,11 +1314,16 @@ export default {
   height: 100%;
 }
 .codemirror-editor {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 .codemirror-editor /deep/ .CodeMirror {
-  height: 100%;
+    letter-spacing: .025em;
+    line-height: 1.25;
+    font-size: 18px;
+    height: 100%;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
 }
 </style>
 <style lang="css">
@@ -1328,4 +1382,7 @@ export default {
     color: #777 !important;
 }
 
+.CodeMirror-hints {
+    z-index: 99999;
+}
 </style>

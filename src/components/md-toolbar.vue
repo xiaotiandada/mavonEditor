@@ -45,6 +45,7 @@
                     class="op-icon fa fa-mavon-table" aria-hidden="true"
                     :title="`${d_words.tl_table} (ctrl+alt+t)`"></button>
             <button :disabled="!editable" type="button" v-if="toolbars.line" @click.stop="$clicks('line')"
+                    title="分割线"
                     class="op-icon icon-btn" aria-hidden="true">
                     <svg t="1587552973767" class="line-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10053" width="200" height="200"><path d="M904 476H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8z" p-id="10054" fill="#ccc"></path></svg>
             </button>
@@ -58,11 +59,13 @@
     </div>
     <div class="toolbar-right">
         <button :disabled="!editable" type="button" @click.stop="$clickToggle('edit')"
+            title="编辑模式"
             class="op-icon icon-btn" aria-hidden="true">
             <svg t="1587538645109" class="edit-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3796" width="200" height="200"><path d="M64.5 927.7c-3.7 18.7 13.1 35.5 31.8 31.8l203.8-48.6c7.5-1.9 13.1-5.6 16.8-9.3l3.7-3.7c3.7-3.7 5.6-16.8-1.9-24.3L150.5 705.2c-7.5-7.5-20.6-5.6-24.3-1.9l-3.7 3.7c-5.6 5.6-7.5 11.2-9.3 16.8L64.5 927.7z m635.7-794.6c-7.5 7.5-7.5 18.7 0 26.2l164.5 164.5c7.5 7.5 18.7 7.5 26.2 0l46.7-46.7c29.9-28 29.9-72.9 0-102.8l-87.9-87.9c-29.9-29.9-76.7-29.9-106.6 0l-42.9 46.7zM202.8 651l166.4 166.4c7.5 7.5 18.7 7.5 26.2 0l415.1-416.9c7.5-7.5 7.5-18.7 0-26.2L645.9 209.8c-7.5-7.5-18.7-7.5-26.2 0L202.8 626.7c-7.4 7.5-7.4 18.7 0 24.3z" p-id="3797" fill="#ccc"></path></svg>
         </button>
 
         <button :disabled="!editable" type="button" @click.stop="$clickToggle('compared')"
+            title="对照模式"
             class="op-icon fa fa-mavon-columns" aria-hidden="true"></button>
     </div>
 </div>

@@ -1,6 +1,6 @@
 {
   "name": "mavon-editor-matataki",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "Vue markdown editor",
   "main": "dist/mavon-editor.js",
   "types": "./mavon-editor.d.ts",
@@ -29,7 +29,7 @@
   "homepage": "https://github.com/xiaotiandada/mavonEditor#readme",
   "dependencies": {
     "animejs": "3.2.0",
-    "codemirror": "5.53.0",
+    "codemirror": "5.42.0",
     "highlight.js": "^9.11.0",
     "highlight.js-async-webpack": "^1.0.4",
     "velocity-animate": "1.5.2",
