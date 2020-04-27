@@ -540,6 +540,7 @@ export default {
             scrollSwitchTimerLeft: null,
             scrollSwitchRight: false,
             scrollSwitchTimerRight: null,
+            scrollSwitch: false, // 滚动开关
             statusBar: {
                 line: 0,
                 column: 0,
@@ -914,58 +915,61 @@ export default {
                 let mainFlag = false; // 抵消两个滚动事件之间互相触发
                 let preFlag = false; // 如果两个 flag 都为 true，证明是反弹过来的事件引起的
 
-            const scrolling = (who) => {
-                // 滚动信息
-                const scrollInfo = this.codemirror.getScrollInfo()
+                const scrolling = (who) => {
+                    // 滚动信息
+                    const scrollInfo = this.codemirror.getScrollInfo()
 
-                // 设置右侧滚动
-                const setPreview = (dom, scrollTop) => {
-                    try {
-                        anime({
-                            targets: dom,
-                            scrollTop: scrollTop,
-                            duration: 100,
-                            easing: 'linear'
-                        });
-                    } catch (e) {
-                        console.log(e)
-                        dom.scrollTop = scrollTop
-                    }
-                }
-
-                if (who === 'pre') {
-                    // 判断到达顶部
-                    if (getPreview.scrollTop <= 0) {
-                        this.codemirror.scrollTo(null, 0)
-                        return
+                    // 设置右侧滚动
+                    const setPreview = (dom, scrollTop) => {
+                        try {
+                            anime({
+                                targets: dom,
+                                scrollTop: scrollTop,
+                                duration: 100,
+                                easing: 'linear'
+                            });
+                        } catch (e) {
+                            console.log(e)
+                            dom.scrollTop = scrollTop
+                        }
                     }
 
-                    // 判断到达底部
-                    if (getPreview.scrollTop >= (getPreview.scrollHeight - getPreview.clientHeight)) {
-                        this.codemirror.scrollTo(null, scrollInfo.height - scrollInfo.clientHeight)
-                        return
-                    }
+                    if (who === 'pre') {
+                        // 判断到达顶部
+                        if (getPreview.scrollTop <= 0) {
+                            this.codemirror.scrollTo(null, 0)
+                            return
+                        }
 
-                    preFlag = true;
-                    if (mainFlag === true) { // 抵消两个滚动事件之间互相触发
-                        mainFlag = false;
-                        preFlag = false;
+                        // 判断到达底部
+                        if (getPreview.scrollTop >= (getPreview.scrollHeight - getPreview.clientHeight)) {
+                            this.codemirror.scrollTo(null, scrollInfo.height - scrollInfo.clientHeight)
+                            return
+                        }
+
+                        preFlag = true;
+                        if (mainFlag === true) { // 抵消两个滚动事件之间互相触发
+                            mainFlag = false;
+                            preFlag = false;
+                            return;
+                        }
+                        // console.log('pre??')
+
+                        const scrollTopNumber = Math.round((spPreview.scrollTop + spPreview.clientHeight) * txtMain.scrollHeight  / spPreview.scrollHeight - txtMain.clientHeight);
+                        // console.log(scrollTopNumber)
+                        this.codemirror.scrollTo(null, scrollTopNumber)
+                        // txtMain.scrollTop = scrollTop
                         return;
                     }
-                    // console.log('pre??')
+                    if (who === 'main') {
+                        // 如果在写的时候 编辑区域不允许对照滚动 防止飘
+                        if (this.scrollSwitch) return
 
-                    const scrollTopNumber = Math.round((spPreview.scrollTop + spPreview.clientHeight) * txtMain.scrollHeight  / spPreview.scrollHeight - txtMain.clientHeight);
-                    // console.log(scrollTopNumber)
-                    this.codemirror.scrollTo(null, scrollTopNumber)
-                    // txtMain.scrollTop = scrollTop
-                    return;
-                }
-                if (who === 'main') {
-                    mainFlag = true;
-                    if (preFlag === true) { // 抵消两个滚动事件之间互相触发
-                        mainFlag = false;
-                        preFlag = false;
-                        return;
+                        mainFlag = true;
+                        if (preFlag === true) { // 抵消两个滚动事件之间互相触发
+                            mainFlag = false;
+                            preFlag = false;
+                            return;
                     }
 
                     // 判断到达顶部
@@ -992,6 +996,9 @@ export default {
                 }
 
                 const mainOnscroll = () => {
+                    // 重置滚动状态
+                    this.scrollSwitch = false
+
                     scrolling('main');
                 }
 
@@ -1195,6 +1202,8 @@ export default {
         },
         onChanges(cm) {
             this.updateStatusBar()
+            // 锁定 scrollSwitch
+            this.scrollSwitch = true
         },
         onReady() {
             this.bindScroll()

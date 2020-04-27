@@ -156,7 +156,7 @@ export default {
             this.$refs.md.$emptyHistory()
         },
         $click(val) {
-            console.log(val);
+            // console.log(val);
         },
         imgreplace($e) {
             console.log('here');
@@ -214,7 +214,7 @@ export default {
             alert('save two')
         },
         change (val, render) {
-            console.log(val)
+            // console.log(val)
         },
         opchange (event) {
             this.d_language = event.target.value;
