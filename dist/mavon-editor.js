@@ -22850,9 +22850,9 @@ var toolbar = function toolbar(_type, $vm, data) {
     } else if (_type === 'quote') {
         insertOnStartOfLines(editor, '> ');
     } else if (_type === 'ol') {
-        insertOnStartOfLines(editor, '* ');
-    } else if (_type === 'ul') {
         insertOnStartOfLines(editor, '1. ');
+    } else if (_type === 'ul') {
+        insertOnStartOfLines(editor, '* ');
     } else if (_type === 'task') {
         insertOnStartOfLines(editor, '- [ ] ');
     } else if (_type === 'link') {
