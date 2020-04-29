@@ -542,7 +542,7 @@ export default {
                 otherCursors: true,
                 scrollbarStyle: 'overlay',
                 placeholder: '在此输入内容\n\n现在就开始编辑吧！',
-                extraKeys: { Ctrl: "autocomplete" }, //ctrl可以弹出选择项
+                extraKeys: { Ctrl: "autocomplete" } // ctrl可以弹出选择项
             },
             // 滚动开关
             scrollSwitchLeft: false,
@@ -1015,8 +1015,17 @@ export default {
                     scrolling('pre');
                 }
 
-                txtMain.addEventListener('scroll', throttle(mainOnscroll, 5))
-                spPreview.addEventListener('scroll', throttle(preOnscroll, 5))
+                try {
+                    if (txtMain) {
+                        txtMain.addEventListener('scroll', throttle(mainOnscroll, 5))
+                    }
+
+                    if (spPreview) {
+                        spPreview.addEventListener('scroll', throttle(preOnscroll, 5))
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
             }
 
             function cycle() {
@@ -1204,53 +1213,50 @@ export default {
             this.statusBar.count = editor.lineCount()
         },
         onCursorActivity(cm) {
-            this.updateStatusBar()
+        this.updateStatusBar()
 
-            // todo 目前只做了 emoji 的 base 等待扩展
+        // todo 目前只做了 emoji 的 base 等待扩展
 
-            // emoji
-            // console.log(cm.getCursor())
-            // console.log(cm.getDoc().getCursor())
-            let cursor = cm.getCursor()
-            let cursorValue = cm.getLine(cursor.line)
-            let cursorValueLen = cursorValue.length
-            let cursorValueText = cursorValue.slice(cursorValueLen - 2)
+        // emoji
+        // console.log(cm.getCursor())
+        // console.log(cm.getDoc().getCursor())
+        let cursor = cm.getCursor()
+        let cursorValue = cm.getLine(cursor.line)
+        let cursorValueLen = cursorValue.length
+        let cursorValueText = cursorValue.slice(cursorValueLen - 2)
 
-            // console.log(cursorValue)
-            // console.log(cursorValueText)
-            var options = {
-                hint: function() {
-                    return {
-                        from: cm.getDoc().getCursor(),
-                        to: cm.getDoc().getCursor(),
-                        list: [
-                            {
-                                text: 'smile: ',
-                                displayText: '😄 smile'
-                            },
-                            {
-                                text: 'smiley: ',
-                                displayText: '😃 smiley'
-                            },
-                        ],
-                    }
+        // console.log(cursorValue)
+        // console.log(cursorValueText)
+        var options = {
+            hint: function() {
+                return {
+                    from: cm.getDoc().getCursor(),
+                    to: cm.getDoc().getCursor(),
+                    list: [
+                        {
+                            text: 'smile: ',
+                            displayText: '😄 smile'
+                        },
+                        {
+                            text: 'smiley: ',
+                            displayText: '😃 smiley'
+                        }
+                    ]
                 }
             }
+        }
 
-            // 当前行已经有了:x: / :+空格
-            if (cursorValueText === ': ') {
-                return
-            }
+        // 当前行已经有了:x: / :+空格
+        if (cursorValueText === ': ') {
+            return
+        }
 
-            // 顶头+:  空格+:
-            // x+空格+:
-            if (cursorValue.trim() === ':' || cursorValueText.trim() === ':') {
-                cm.showHint(options)
-                return
-            }
-
-
-        },
+        // 顶头+:  空格+:
+        // x+空格+:
+        if (cursorValue.trim() === ':' || cursorValueText.trim() === ':') {
+            cm.showHint(options)
+        }
+    },
         onBeforeSelectionChange(cm) {
             this.updateStatusBar()
         },
