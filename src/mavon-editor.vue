@@ -61,7 +61,7 @@
                  v-show="s_preview_switch || s_html_code" class="v-note-show">
                   <!-- @scroll="$v_edit_scroll__right" -->
                 <div id="previewContent" ref="vShowContent" v-html="d_render" v-show="!s_html_code"
-                     :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content markdown-body"
+                     :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content markdown-body extmarkdown"
                      >
                 </div>
                 <div v-show="s_html_code" :class="{'scroll-style': s_scrollStyle, 'scroll-style-border-radius': s_scrollStyle}" class="v-show-content-html spoiler"
@@ -1392,3 +1392,5 @@ export default {
     z-index: 99999;
 }
 </style>
+
+<style lang="less" scoped src="./lib/css/extmarkdown.less"></style>
