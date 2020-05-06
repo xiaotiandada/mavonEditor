@@ -4,6 +4,10 @@ import {
 } from '../core/extra-function.js'
 import ayncscroll from '../../lib/syncscroll.js'
 
+import {
+    formatReadTags
+} from '../extmarkdown.js'
+
 var markdown_config = {
     html: true,        // Enable HTML tags in source
     xhtmlOut: true,        // Use '/' to close single tags (<br />).
@@ -121,7 +125,8 @@ export default {
             var $vm = this;
             missLangs = {};
             needLangs = [];
-            var res = markdown.render(src);
+            const formatResult = formatReadTags(src);
+            var res = markdown.render(formatResult);
             if (this.ishljs) {
                 if (needLangs.length > 0) {
                     $vm.$_render(src, func, res);
