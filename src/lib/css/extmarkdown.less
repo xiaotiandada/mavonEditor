@@ -2,14 +2,20 @@
     .unlock {
         background-color: #F7F7F7;
         padding: 20px;
-        border-radius: 6px;
         position: relative;
+        &.alone-show {
+            border-radius: 6px 6px 6px 6px;
+            margin-top: 20px;
+            margin-bottom: 24px;
+            .lock-bg {
+                border-radius: 6px 0px 6px 0px;
+            }
+        }
 
         .lock-bg {
             background-color: #B2B2B2;
             width: 20px;
             height: 20px;
-            border-radius: 6px 0px 6px 0px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -25,11 +31,21 @@
 
     /deep/ .unlock-content {
         .unlock();
+        border-radius: 6px 6px 0 0;
+        margin-top: 20px;
+        .lock-bg {
+            border-radius: 6px 0px 6px 0px;
+        }
     }
 
     /deep/ .unlock-prompt {
         .unlock();
-        margin-top: 5px;
+        border-radius: 0 0 6px 6px;
+        margin-top: 4px;
+        margin-bottom: 24px;
+        .lock-bg {
+            border-radius: 0px 0px 6px 0px;
+        }
 
         .condition-title {
             margin-top: 10px;
