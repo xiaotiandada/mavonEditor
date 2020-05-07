@@ -1,5 +1,5 @@
 {
-  "name": "editor",
+  "name": "@matataki/editor",
   "version": "1.0.0",
   "description": "Vue markdown editor",
   "main": "dist/mavon-editor.js",
@@ -117,5 +117,8 @@
     "webpack-bundle-analyzer": "^2.8.1",
     "webpack-dev-server": "^2.11.5",
     "webpack-md5-hash": "^0.0.5"
+  },
+  "directories": {
+    "doc": "doc"
   }
 }
