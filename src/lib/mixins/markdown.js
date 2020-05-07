@@ -121,11 +121,11 @@ export default {
         hljs_opts.highlighted = this.ishljs;
     },
     methods: {
-        $render(src, func) {
+        $render(src, func, readTagsDisplayMode = 0) {
             var $vm = this;
             missLangs = {};
             needLangs = [];
-            const formatResult = formatReadTags(src);
+            const formatResult = formatReadTags(src, readTagsDisplayMode);
             var res = markdown.render(formatResult);
             if (this.ishljs) {
                 if (needLangs.length > 0) {
