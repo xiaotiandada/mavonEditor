@@ -21,6 +21,7 @@
                         @toolbar_left_click="toolbar_left_click"
                         @toolbar_left_addlink="toolbar_left_addlink" 
                         @toolbar_toggle_click="toolbar_toggle_click"
+                        @read_tags_display_mode="read_tags_mode_click"
                         :toolbars="toolbars"
                         @imgDel="$imgDel" 
                         @imgTouch="$imgTouch" 
@@ -452,6 +453,7 @@ export default {
             s_right_click_menu_show: false,
             right_click_menu_top: 0,
             right_click_menu_left: 0,
+            read_tags_display_mode: 0,
             s_subfield: (() => {
                 return this.subfield;
             })(),
@@ -736,6 +738,10 @@ export default {
         },
         toolbar_toggle_click(_type) {
             toolbar_right_click(_type, this);
+        },
+        read_tags_mode_click(newVal) {
+            this.read_tags_display_mode = newVal;
+            this.iRender();
         },
         getNavigation($vm, full) {
             return getNavigation($vm, full);
@@ -1167,38 +1173,40 @@ export default {
         iRender: debounce(function (toggleChange) {
             var $vm = this;
             this.$render($vm.d_value, function(res) {
-                // render
-                let { result, srcArr } = $vm.getTagSrcArrAndRemoveTagSrc(res, 'iframe')
-                // console.log(result, srcArr)
-                $vm.d_render = result;
+                    // render
+                    let { result, srcArr } = $vm.getTagSrcArrAndRemoveTagSrc(res, 'iframe')
+                    // console.log(result, srcArr)
+                    $vm.d_render = result;
 
-                $vm.$nextTick(() => {
-                    clearTimeout($vm.timer)
-                    $vm.timer = setTimeout(() => {
-                        // console.log('数组没有数据可供修改')
-                        if (srcArr.length <= 0) return
-                        $vm.optimizationTag(srcArr, 'iframe')
-                    }, 1600)
-                })
-                // $vm.nowTime = Date.now()
+                    $vm.$nextTick(() => {
+                        clearTimeout($vm.timer)
+                        $vm.timer = setTimeout(() => {
+                            // console.log('数组没有数据可供修改')
+                            if (srcArr.length <= 0) return
+                            $vm.optimizationTag(srcArr, 'iframe')
+                        }, 1600)
+                    })
+                    // $vm.nowTime = Date.now()
 
-                // console.log($vm.$refs.vShowContent)
-                // change回调  toggleChange == false 时候触发change回调
-                if (!toggleChange)
-                {
-                    if ($vm.change) $vm.change($vm.d_value, $vm.d_render);
-                }
-                // 改变标题导航
-                if ($vm.s_navigation) getNavigation($vm, false);
-                // v-model 语法糖
-                $vm.$emit('input', $vm.d_value)
-                // 塞入编辑记录数组
-                if ($vm.d_value === $vm.d_history[$vm.d_history_index]) return
-                window.clearTimeout($vm.currentTimeout)
-                $vm.currentTimeout = setTimeout(() => {
-                    $vm.saveHistory();
-                }, 500);
-                })
+                    // console.log($vm.$refs.vShowContent)
+                    // change回调  toggleChange == false 时候触发change回调
+                    if (!toggleChange)
+                    {
+                        if ($vm.change) $vm.change($vm.d_value, $vm.d_render);
+                    }
+                    // 改变标题导航
+                    if ($vm.s_navigation) getNavigation($vm, false);
+                    // v-model 语法糖
+                    $vm.$emit('input', $vm.d_value)
+                    // 塞入编辑记录数组
+                    if ($vm.d_value === $vm.d_history[$vm.d_history_index]) return
+                    window.clearTimeout($vm.currentTimeout)
+                    $vm.currentTimeout = setTimeout(() => {
+                        $vm.saveHistory();
+                    }, 500);
+                },
+                $vm.read_tags_display_mode
+            )
             }, 500),
         // 清空上一步 下一步缓存
         $emptyHistory() {
