@@ -54,8 +54,8 @@ function render(innerText, elseText, hold, hide, displayMode) {
             innerText +
             `</div>`;
     }
-    if(hide) return html;
-    
+    if (hide) return html;
+
     if (displayMode === 0 || displayMode === 2) {
         const list = conditionList(hold);
         if (!html) html += '\n'
