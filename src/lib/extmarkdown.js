@@ -33,8 +33,8 @@ export function formatReadTags(content, displayMode) {
             const hide = attrBoolean(ast[α].attributes.hide, false);
             const hold = attrMines(ast[α].attributes.hold);
             const innerText = ast[α].innerText;
-            const elseText = hide ? '' : ast[α].elseText;
-            β += render(innerText, elseText, hold, displayMode)
+            const elseText = ast[α].elseText;
+            β += render(innerText, elseText, hold, hide, displayMode)
             α++;
             continue;
         }
@@ -44,7 +44,7 @@ export function formatReadTags(content, displayMode) {
     return β;
 }
 
-function render(innerText, elseText, hold, displayMode) {
+function render(innerText, elseText, hold, hide, displayMode) {
     let html = '';
     if (displayMode === 0 || displayMode === 1) {
         html += `<div class="unlock-content${displayMode === 1 ? ' alone-show' : ''}">\n` +
@@ -54,6 +54,8 @@ function render(innerText, elseText, hold, displayMode) {
             innerText +
             `</div>`;
     }
+    if(hide) return html;
+    
     if (displayMode === 0 || displayMode === 2) {
         const list = conditionList(hold);
         if (!html) html += '\n'
