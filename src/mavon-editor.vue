@@ -4,7 +4,14 @@
         <div class="v-note-panel">
             <!--编辑区-->
             <!-- @scroll="$v_edit_scroll" -->
-            <div ref="vNoteEdit" class="v-note-edit divarea-wrapper">
+            <div ref="vNoteEdit" class="v-note-edit divarea-wrapper"
+                :class="{
+                    'scroll-style': s_scrollStyle, 
+                    'scroll-style-border-radius': s_scrollStyle && !s_preview_switch && !s_html_code, 
+                    'single-edit': !s_preview_switch && !s_html_code, 
+                    'single-show': (!s_subfield && s_preview_switch) || (!s_subfield && s_html_code), 
+                    'transition': transition}"
+            >
                 <!--工具栏-->
                 <div class="v-note-op edit-toolbar" v-show="toolbarsFlag">
                     <v-md-toolbar 
