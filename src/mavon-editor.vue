@@ -125,7 +125,7 @@ import {keydownListen} from './lib/core/keydown-listen.js'
 import hljsCss from './lib/core/hljs/lang.hljs.css.js'
 import hljsLangs from './lib/core/hljs/lang.hljs.js'
 
-import utils from './lib/utils'
+import * as utils from './lib/utils'
 
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
