@@ -24,6 +24,7 @@
         imageUploadAction="customize"
         :imageUploadFn="imageUploadFn"
         :encryption="encryption"
+        :placeholder="placeholder"
       >
       </mavon-editor>
   </div>
@@ -114,7 +115,8 @@ export default {
                 console.log(file);
             },
             imgName: '',
-            encryption: '\n\n[read hold="SYMBOL amount"]\n\n隐藏内容\n> [📔使用说明](https://www.yuque.com/matataki/matataki/giw9u4)\n\n[else]\n\n预览内容\n\n[/read]\n'
+            encryption: '\n\n[read hold="SYMBOL amount"]\n\n隐藏内容\n[📔使用说明](https://www.yuque.com/matataki/matataki/giw9u4)\n\n[else]\n\n预览内容\n\n[/read]\n',
+            placeholder: '在此输入内容\n支持Markdown、HTML标签、独创的内容加密语法（点击上方的小锁）\n\n现在就开始编辑吧！'
         }
     },
     created () {

@@ -550,7 +550,7 @@ export default {
                 // autoRefresh: true,
                 otherCursors: true,
                 scrollbarStyle: 'overlay',
-                placeholder: '在此输入内容\n支持Markdown、HTML标签、独创的内容加密语法（点击上方的小锁）\n\n现在就开始编辑吧！',
+                placeholder: '在此输入内容\n\n现在就开始编辑吧！',
                 extraKeys: { Ctrl: "autocomplete" } // ctrl可以弹出选择项
             },
             // 滚动开关
@@ -580,6 +580,9 @@ export default {
             //     window.codemirror = this.codemirror
             // }, 2000)
         })
+        if(this.placeholder) {
+            this.cmOptions.placeholder = this.placeholder;
+        }
     },
     mounted() {
         var $vm = this;
