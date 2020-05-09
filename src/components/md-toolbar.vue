@@ -84,8 +84,8 @@
         <button :disabled="!editable" type="button" @click.stop="windowToggle === 'edit'? $clickToggle('compared') : $clickToggle('edit')"
             :title="windowToggle === 'edit' ? '专注模式' : '对照模式'"
             class="op-icon icon-btn" aria-hidden="true">
-            <svg v-show="windowToggle === 'compared'" width="16" height="16" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g><rect stroke="#ccc" stroke-width="2" x="1" y="1" width="30" height="30" rx="1"/><path d="M2 2h28v2H2zM2 28h28v2H2z" fill="#ccc" /><path d="M15 4h2v25h-2z" fill="#fff" /></g></svg>
-            <svg v-show="windowToggle === 'edit'" width="16" height="16" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g><rect stroke="#ccc" stroke-width="2" x="1" y="1" width="30" height="30" rx="1"/><path d="M2 2h28v2H2zM2 28h28v2H2z" fill="#ccc" /></g></svg>
+            <svg v-show="windowToggle === 'compared'" width="16" height="16" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g><rect stroke="#ccc" stroke-width="3" x="1" y="1" width="30" height="30" rx="4" fill="#fff0"/><path d="M2 2h28v2H2zM2 28h28v2H2z" fill="#ccc" /><path d="M15 4h2v25h-2z" fill="#ccc" /></g></svg>
+            <svg v-show="windowToggle === 'edit'" width="16" height="16" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g><rect stroke="#ccc" stroke-width="3" x="1" y="1" width="30" height="30" rx="4" fill="#fff0"/><path d="M2 2h28v2H2zM2 28h28v2H2z" fill="#ccc" /></g></svg>
         </button>
 <!-- 
         <button :disabled="!editable" type="button" @click.stop=""
