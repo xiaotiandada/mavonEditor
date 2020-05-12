@@ -170,9 +170,13 @@ export default {
     created() {
         // 删除莫名其妙出现的undefined hack...
         this.$nextTick(() => {
-            const itemNodes = document.querySelector('.v-left-item').childNodes
-            if (itemNodes[itemNodes.length - 1].textContent === 'undefined') {
-                itemNodes[itemNodes.length - 1].remove()
+            try {
+                const itemNodes = document.querySelector('.v-left-item').childNodes
+                if (itemNodes[itemNodes.length - 1].textContent === 'undefined') {
+                    itemNodes[itemNodes.length - 1].remove()
+                }
+            } catch (e) {
+                console.log(e)
             }
         })
     },
