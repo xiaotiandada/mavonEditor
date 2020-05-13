@@ -1,24 +1,28 @@
 const tokenizeRules = [
     {
-        regexp: /[^\[]+/mg,
-        block: 'text'
+        regexp: /[^\[`]+/mg,
+        block: 'text',
     },
     {
         regexp: /^\[read[^\]]+\](?!\()/mg,
-        block: 'readOpen'
+        block: 'readOpen',
     },
     {
         regexp: /^\[\/read\](?!\()/mg,
-        block: 'readClose'
+        block: 'readClose',
     },
     {
         regexp: /^\[else\](?!\()/mg,
-        block: 'else'
+        block: 'else',
     },
     {
-        regexp: /\[/mg,
-        block: 'text'
-    }
+        regexp: /^```/mg,
+        block: 'code'
+    },
+    {
+        regexp: /(\[|`)/mg,
+        block: 'text',
+    },
 ];
 
 const lockSvg = '<svg width="10" height="12" xmlns="http://www.w3.org/2000/svg"><path style="fill: white" d="M4.59.011c.395 0 .776.074 1.143.223.366.148.692.352.976.611.284.26.513.563.686.909.173.346.26.716.26 1.112v1.829H6.158V3.212c0-.52-.146-.923-.439-1.211-.292-.289-.686-.433-1.18-.433-.445 0-.803.144-1.075.433-.272.288-.408.692-.408 1.21V4.72H1.5V2.866c0-.396.078-.766.235-1.112.156-.346.373-.65.649-.909.276-.26.601-.463.976-.611A3.314 3.314 0 014.59.01zM9.271 8.44V10.082c0 .223-.039.433-.117.631a1.521 1.521 0 01-.321.507 1.489 1.489 0 01-1.094.457H1.487c-.223 0-.424-.04-.606-.117a1.401 1.401 0 01-.772-.797 1.598 1.598 0 01-.105-.581v-3.93c0-.23.08-.424.24-.58a.78.78 0 01.563-.236h7.65c.23 0 .424.079.58.235.157.157.235.35.235.58V8.44z"/></svg>'
@@ -83,28 +87,68 @@ function conditionList(need) {
     return list
 }
 
+
+/* 处理位于ReadOpen和ReadClose之间的东西,比如code block */
+function formalizeRead(tokens){
+    //Γ表示是否处于Readtag中
+    let α = 0,β = [],acc='',Γ = false;
+    while(α < tokens.length){
+        if(look(tokens,α,'readOpen')){
+            Γ = true;
+            β.push(tokens[α]);
+            α++; continue;
+        }
+        if(look(tokens,α,'readClose')){
+            Γ = false;
+            β.push({block:'text',value:acc});
+            acc = '';
+            β.push(tokens[α]);
+            α++; continue;
+        }
+        if(look(tokens,α,'else')){
+            β.push({block:'text',value:acc});
+            acc = '';
+            β.push(tokens[α]);
+            α++; continue;
+        }
+        if(Γ){
+            acc += tokens[α].value;
+            α++; continue;
+        }
+        β.push(tokens[α]);
+        α++; continue;
+    }
+    return β;
+}
+
 function parse(text) {
-    let tokenized = mergeTextBlocks(tokenize(text));
+    let tokenized = formalizeRead(mergeTextBlocks(tokenize(text)));
     let α = 0,
-        β = [];
+        β = [],
+        Γ = false; //Γ表示是否处于code块内
     while (α < tokenized.length) {
-        if (lookseq(tokenized, α, 'readOpen', 'text', 'readClose')) {
+        if (look(tokenized,α,'code')){
+            Γ = !Γ; //翻转标志位
+            β.push(tokenized[α]);
+            α ++; continue;
+        }
+        if (lookseq(tokenized, α, 'readOpen', 'text', 'readClose')&&!Γ) {
             β.push({
                 block: 'read',
                 innerText: tokenized[α + 1].value,
-                attributes: parseReadOpen(tokenized[α])
+                attributes: parseReadOpen(tokenized[α]),
             });
             α += 3;
             continue;
         }
         if (
-            lookseq(tokenized, α, 'readOpen', 'text', 'else', 'text', 'readClose')
+            lookseq(tokenized, α, 'readOpen', 'text', 'else', 'text', 'readClose')&&!Γ
         ) {
             β.push({
                 block: 'read',
                 innerText: tokenized[α + 1].value,
                 elseText: tokenized[α + 3].value,
-                attributes: parseReadOpen(tokenized[α])
+                attributes: parseReadOpen(tokenized[α]),
             });
             α += 5;
             continue;
