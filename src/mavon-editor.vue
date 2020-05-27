@@ -1348,6 +1348,7 @@ export default {
     height: 100%;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch;
+    font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Segoe UI,Arial,Roboto,PingFang SC,Hiragino Sans GB,Microsoft Yahei,sans-serif;
 }
 </style>
 <style lang="css">
