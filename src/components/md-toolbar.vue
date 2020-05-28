@@ -235,18 +235,21 @@ export default {
             // hack file 无法选择同一文件bug
             document.querySelector('#_toolbar-file').setAttribute("type", "text");
 
+            this.$emit('imageMultipleUpload', files)
+
             // 遍历所有文件
-            for (let i = 0, l = files.length; i < l; i++) {
-                const res = await this.imageUploadFn(files[i])
-                // 如果有结果
-                if (res) {
-                    this.$emit('toolbar_left_click', 'imagelink', {
-                        action: this.imageUploadAction, // default customize
-                        url: res,
-                        title: files[i].name || ''
-                    });
-                }
-            }
+            // for (let i = 0, l = files.length; i < l; i++) {
+            //     console.log('file', files[i])
+            //     const res = await this.imageUploadFn(files[i])
+            //     // 如果有结果
+            //     if (res) {
+            //         this.$emit('toolbar_left_click', 'imagelink', {
+            //             action: this.imageUploadAction, // default customize
+            //             url: res,
+            //             title: files[i].name || ''
+            //         });
+            //     }
+            // }
             // hack file 无法选择同一文件bug
             document.querySelector('#_toolbar-file').setAttribute("type", "file");
         },
