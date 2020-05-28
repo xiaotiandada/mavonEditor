@@ -681,12 +681,13 @@ export default {
         $paste($e) {
             try {
                 let clipboardData = $e.clipboardData;
-                console.log('file', clipboardData.items[0])
-                console.log('file', clipboardData.items[1])
-                console.log('file', clipboardData.items[2])
+                // console.log('file', clipboardData.items[0])
+                // console.log('file', clipboardData.items[1])
+                // console.log('file', clipboardData.items[2])
                 // console.log('file', clipboardData.items)
                 /**
                  * 测试了 chrome safari mac
+                 * 注: 只有在桌面复制粘贴的情况下 在浏览器里面 copy image是正常的
                  * 1. chrome 粘贴图片会产生一条 string 文件名 safari不会
                  * 2. 粘贴pdf mac pdf 会当 image 一样粘贴图片 并且产生文件名
                  * 3. 粘贴pdf mac safari 会复制文件名 但是类型是 pdf 会当作文字粘贴
@@ -699,13 +700,14 @@ export default {
                         let fileLists = []
                         for (var i = 0; i < items.length; i++) {
                             if (items[i].kind === 'file' && items[i].type.indexOf('image') !== -1) {
-                                console.log('items[0]', items[i])
                                 // 有图片 第一个 item 为 string 然后去掉这条内容 (chrome)
                                 // 只能解决单个图片的复制 如果同时复制多个的话无法删除内容(需要写大量的判断了)
                                 if (items[0].kind === 'string') {
                                     let str = clipboardData.getData('text/plain')
-                                    console.log('items[0]', str)
-                                    this.replaceRange(str, '')
+                                    if (str) {
+                                        console.log('items[0]', str)
+                                        this.replaceRange(str, '')
+                                    }
                                 }
                                 let file = items[i].getAsFile();
                                 fileLists.push(file)
