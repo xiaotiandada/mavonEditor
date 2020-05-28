@@ -656,38 +656,94 @@ export default {
             }
         },
         $drag($e) {
-            var dataTransfer = $e.dataTransfer;
-            if (dataTransfer) {
-                var files = dataTransfer.files;
+            try {
+                var dataTransfer = $e.dataTransfer;
+                if (dataTransfer) {
+                    var files = dataTransfer.files;
 
-                if (files.length < 0) return
+                    if (files.length < 0) return
 
-                let filesList = []
-                for (let i = 0; i < files.length; i++) {
-                    // 如果是图片 其他不上传
-                    let type = files[i].type
-                    if (type.indexOf('image') !== -1) {
-                        filesList.push(files[i])
+                    let filesList = []
+                    for (let i = 0; i < files.length; i++) {
+                        // 如果是图片 其他不上传
+                        let type = files[i].type
+                        if (type.indexOf('image') !== -1) {
+                            filesList.push(files[i])
+                        }
                     }
+                    $e.preventDefault();
+                    this.imageMultipleUpload(filesList)
                 }
-                $e.preventDefault();
-                this.imageMultipleUpload(filesList)
+            } catch (e) {
+                console.log(e)
             }
         },
         $paste($e) {
-            var clipboardData = $e.clipboardData;
-            if (clipboardData) {
-                let items = clipboardData.items;
-                if (items && items.length) {
-                    for (var i = 0; i < items.length; i++) {
-                        if (items[i].kind === 'file' && items[i].type.indexOf('image') !== -1) {
-                            let file = items[i].getAsFile();
-                            stopEvent($e)
-                            this.imageMultipleUpload([file])
-                            break;
+            try {
+                let clipboardData = $e.clipboardData;
+                console.log('file', clipboardData.items[0])
+                console.log('file', clipboardData.items[1])
+                console.log('file', clipboardData.items[2])
+                // console.log('file', clipboardData.items)
+                /**
+                 * 测试了 chrome safari mac
+                 * 1. chrome 粘贴图片会产生一条 string 文件名 safari不会
+                 * 2. 粘贴pdf mac pdf 会当 image 一样粘贴图片 并且产生文件名
+                 * 3. 粘贴pdf mac safari 会复制文件名 但是类型是 pdf 会当作文字粘贴
+                 * 4. 在chrome里面 多个图片只会取一张 最后一张
+                 * 5. 在safari里面 多个图片会全部采用
+                 */
+                if (clipboardData) {
+                    let items = clipboardData.items;
+                    if (items && items.length) {
+                        let fileLists = []
+                        for (var i = 0; i < items.length; i++) {
+                            if (items[i].kind === 'file' && items[i].type.indexOf('image') !== -1) {
+                                console.log('items[0]', items[i])
+                                // 有图片 第一个 item 为 string 然后去掉这条内容 (chrome)
+                                // 只能解决单个图片的复制 如果同时复制多个的话无法删除内容(需要写大量的判断了)
+                                if (items[0].kind === 'string') {
+                                    let str = clipboardData.getData('text/plain')
+                                    console.log('items[0]', str)
+                                    this.replaceRange(str, '')
+                                }
+                                let file = items[i].getAsFile();
+                                fileLists.push(file)
+                            }
                         }
+                        stopEvent($e)
+                        this.imageMultipleUpload(fileLists)
                     }
                 }
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        // 替换内容 需要替换的 str 替换图片标题 val 替换图片地址 url
+        replaceRange (str, val) {
+            //  替代品
+            let replacements = [];
+            // 需要代替的字符
+            let string = str
+            // 获取多少行
+            let lines = this.codemirror.getValue().split('\n');
+            // 新的元素
+            let newValue = val
+
+            for (let i = 0; i < lines.length; i++) {
+                // 找到代替的字符
+                let ch = lines[i].indexOf(string);
+                if (ch !== -1) {
+                    // 写入位置
+                    let from = { line:i, ch:ch }
+                    let to =  { line:i, ch:ch + string.length }
+                    replacements.push({replacement: newValue, from, to})
+                }
+            }
+            // 批量修改
+            for (let i = 0; i < replacements.length; i++) {
+                let data = replacements[i]
+                this.codemirror.replaceRange(data.replacement, data.from, data.to);
             }
         },
         // files array
@@ -701,34 +757,6 @@ export default {
 
             // 上传成功后 替换 progressText
             const urlText = (imageName = '', filename) => `![${imageName}](${filename})`
-
-            // 替换内容 需要替换的 str 替换图片标题 val 替换图片地址 url
-            const replaceRange = (str, val, url) => {
-                //  替代品
-                let replacements = [];
-                // 需要代替的字符
-                let string = str
-                // 获取多少行
-                let lines = this.codemirror.getValue().split('\n');
-                // 新的元素
-                let newValue = urlText(val, url)
-
-                for (let i = 0; i < lines.length; i++) {
-                    // 找到代替的字符
-                    let ch = lines[i].indexOf(string);
-                    if (ch !== -1) {
-                        // 写入位置
-                        let from = { line:i, ch:ch }
-                        let to =  { line:i, ch:ch + string.length }
-                        replacements.push({replacement: newValue, from, to})
-                    }
-                }
-                // 批量修改
-                for (let i = 0; i < replacements.length; i++) {
-                    let data = replacements[i]
-                    this.codemirror.replaceRange(data.replacement, data.from, data.to);
-                }
-            }
     
             for (let i = 0; i < files.length; i++) {
                 let titleId = ID() // 唯一ID
@@ -753,13 +781,13 @@ export default {
                     // const res = 'https://ssimg.frontenduse.top/article/2020/05/27/b233a6948f8b3f31f0ca8b94de092376.png'
                     // 上传完成
                     if (res) {
-                        replaceRange(replacementsArray[i].key, replacementsArray[i].val.name || '', res)
+                        this.replaceRange(replacementsArray[i].key, urlText(replacementsArray[i].val.name || '', res))
                     } else {
                         console.log(res)
-                        replaceRange(replacementsArray[i].key, 'Upload fail', '')
+                        this.replaceRange(replacementsArray[i].key, urlText('Upload fail', ''))
                     }
                 } catch (e) {
-                    replaceRange(replacementsArray[i].key, 'Upload error', '')
+                    this.replaceRange(replacementsArray[i].key, urlText('Upload error', ''))
                     console.log(e)
                 }
             }
