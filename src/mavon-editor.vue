@@ -4,7 +4,14 @@
         <div class="v-note-panel">
             <!--编辑区-->
             <!-- @scroll="$v_edit_scroll" -->
-            <div ref="vNoteEdit" class="v-note-edit divarea-wrapper">
+            <div ref="vNoteEdit" class="v-note-edit divarea-wrapper"
+                :class="{
+                    'scroll-style': s_scrollStyle, 
+                    'scroll-style-border-radius': s_scrollStyle && !s_preview_switch && !s_html_code, 
+                    'single-edit': !s_preview_switch && !s_html_code, 
+                    'single-show': (!s_subfield && s_preview_switch) || (!s_subfield && s_html_code), 
+                    'transition': transition}"
+            >
                 <!--工具栏-->
                 <div class="v-note-op edit-toolbar" v-show="toolbarsFlag">
                     <v-md-toolbar 
@@ -14,6 +21,8 @@
                         @toolbar_left_click="toolbar_left_click"
                         @toolbar_left_addlink="toolbar_left_addlink" 
                         @toolbar_toggle_click="toolbar_toggle_click"
+                        @read_tags_display_mode="read_tags_mode_click"
+                        @imageMultipleUpload="imageMultipleUpload"
                         :toolbars="toolbars"
                         @imgDel="$imgDel" 
                         @imgTouch="$imgTouch" 
@@ -117,7 +126,7 @@ import {keydownListen} from './lib/core/keydown-listen.js'
 import hljsCss from './lib/core/hljs/lang.hljs.css.js'
 import hljsLangs from './lib/core/hljs/lang.hljs.js'
 
-import utils from './lib/utils'
+import * as utils from './lib/utils'
 
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
@@ -187,7 +196,7 @@ import {
     loadScript,
     ImagePreviewListener
 } from './lib/core/extra-function.js'
-import {p_ObjectCopy_DEEP, stopEvent} from './lib/util.js'
+import {p_ObjectCopy_DEEP, stopEvent, ID, sleep} from './lib/util.js'
 import {toolbar_left_click, toolbar_left_addlink} from './lib/toolbar_left_click.js'
 import { toolbar } from './lib/toolbar'
 import {toolbar_right_click} from './lib/toolbar_right_click.js'
@@ -445,6 +454,7 @@ export default {
             s_right_click_menu_show: false,
             right_click_menu_top: 0,
             right_click_menu_left: 0,
+            read_tags_display_mode: 0,
             s_subfield: (() => {
                 return this.subfield;
             })(),
@@ -571,6 +581,9 @@ export default {
             //     window.codemirror = this.codemirror
             // }, 2000)
         })
+        if (this.placeholder) {
+            this.cmOptions.placeholder = this.placeholder;
+        }
     },
     mounted() {
         var $vm = this;
@@ -643,34 +656,141 @@ export default {
             }
         },
         $drag($e) {
-            var dataTransfer = $e.dataTransfer;
-            if (dataTransfer) {
-                var files = dataTransfer.files;
-                if (files.length > 0) {
+            try {
+                var dataTransfer = $e.dataTransfer;
+                if (dataTransfer) {
+                    var files = dataTransfer.files;
+
+                    if (files.length < 0) return
+
+                    let filesList = []
+                    for (let i = 0; i < files.length; i++) {
+                        // 如果是图片 其他不上传
+                        let type = files[i].type
+                        if (type.indexOf('image') !== -1) {
+                            filesList.push(files[i])
+                        }
+                    }
                     $e.preventDefault();
-                    this.$refs.toolbar_left.$imgFilesAdd(files);
+                    this.imageMultipleUpload(filesList)
                 }
+            } catch (e) {
+                console.log(e)
             }
         },
         $paste($e) {
-            var clipboardData = $e.clipboardData;
-            if (clipboardData) {
-                var items = clipboardData.items;
-                if (!items) return;
-                var types = clipboardData.types || [];
-                var item = null;
-                for (var i = 0; i < types.length; i++) {
-                    if (types[i] === 'Files') {
-                        item = items[i];
-                        break;
+            try {
+                let clipboardData = $e.clipboardData;
+                // console.log('file', clipboardData.items[0])
+                // console.log('file', clipboardData.items[1])
+                // console.log('file', clipboardData.items[2])
+                // console.log('file', clipboardData.items)
+                /**
+                 * 测试了 chrome safari mac
+                 * 注: 只有在桌面复制粘贴的情况下 在浏览器里面 copy image是正常的
+                 * 1. chrome 粘贴图片会产生一条 string 文件名 safari不会
+                 * 2. 粘贴pdf mac pdf 会当 image 一样粘贴图片 并且产生文件名
+                 * 3. 粘贴pdf mac safari 会复制文件名 但是类型是 pdf 会当作文字粘贴
+                 * 4. 在chrome里面 多个图片只会取一张 最后一张
+                 * 5. 在safari里面 多个图片会全部采用
+                 */
+                if (clipboardData) {
+                    let items = clipboardData.items;
+                    if (items && items.length) {
+                        let fileLists = []
+                        for (var i = 0; i < items.length; i++) {
+                            if (items[i].kind === 'file' && items[i].type.indexOf('image') !== -1) {
+                                // 有图片 第一个 item 为 string 然后去掉这条内容 (chrome)
+                                // 只能解决单个图片的复制 如果同时复制多个的话无法删除内容(需要写大量的判断了)
+                                if (items[0].kind === 'string') {
+                                    let str = clipboardData.getData('text/plain')
+                                    if (str) {
+                                        console.log('items[0]', str)
+                                        this.replaceRange(str, '')
+                                    }
+                                }
+                                let file = items[i].getAsFile();
+                                fileLists.push(file)
+                            }
+                        }
+                        stopEvent($e)
+                        this.imageMultipleUpload(fileLists)
                     }
                 }
-                if (item && item.kind === 'file') {
-                    // prevent filename being pasted parallel along
-                    // with the image pasting process
-                    stopEvent($e)
-                    var oFile = item.getAsFile();
-                    this.$refs.toolbar_left.$imgFilesAdd([oFile]);
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        // 替换内容 需要替换的 str 替换图片标题 val 替换图片地址 url
+        replaceRange (str, val) {
+            //  替代品
+            let replacements = [];
+            // 需要代替的字符
+            let string = str
+            // 获取多少行
+            let lines = this.codemirror.getValue().split('\n');
+            // 新的元素
+            let newValue = val
+
+            for (let i = 0; i < lines.length; i++) {
+                // 找到代替的字符
+                let ch = lines[i].indexOf(string);
+                if (ch !== -1) {
+                    // 写入位置
+                    let from = { line:i, ch:ch }
+                    let to =  { line:i, ch:ch + string.length }
+                    replacements.push({replacement: newValue, from, to})
+                }
+            }
+            // 批量修改
+            for (let i = 0; i < replacements.length; i++) {
+                let data = replacements[i]
+                this.codemirror.replaceRange(data.replacement, data.from, data.to);
+            }
+        },
+        // files array
+        async imageMultipleUpload(files) {
+            if (!files || !files.length) return;
+    
+            // 替换元素的内容
+            let replacementsArray = []
+            // 插入文本 用作占位符 完成后被替换
+            const progressText = filename => `![Uploading file...${filename}]()`
+
+            // 上传成功后 替换 progressText
+            const urlText = (imageName = '', filename) => `![${imageName}](${filename})`
+    
+            for (let i = 0; i < files.length; i++) {
+                let titleId = ID() // 唯一ID
+
+                // 写入一段默认的空图片等待上传
+                this.toolbar_left_click('imagelink', {
+                    action: this.imageUploadAction, // default customize
+                    url: '',
+                    title: `Uploading file...${titleId}`
+                })
+    
+                // 因为根据光标位置插入 所有回由下往上插入 所以使用unshift
+                replacementsArray.unshift({
+                    key: progressText(titleId),
+                    val: files[i]
+                })
+            }
+            for (let i = 0; i < replacementsArray.length; i++) {
+                try {
+                    const res = await this.imageUploadFn(replacementsArray[i].val)
+                    // await sleep(2000)
+                    // const res = 'https://ssimg.frontenduse.top/article/2020/05/27/b233a6948f8b3f31f0ca8b94de092376.png'
+                    // 上传完成
+                    if (res) {
+                        this.replaceRange(replacementsArray[i].key, urlText(replacementsArray[i].val.name || '', res))
+                    } else {
+                        console.log(res)
+                        this.replaceRange(replacementsArray[i].key, urlText('Upload fail', ''))
+                    }
+                } catch (e) {
+                    this.replaceRange(replacementsArray[i].key, urlText('Upload error', ''))
+                    console.log(e)
                 }
             }
         },
@@ -729,6 +849,10 @@ export default {
         },
         toolbar_toggle_click(_type) {
             toolbar_right_click(_type, this);
+        },
+        read_tags_mode_click(newVal) {
+            this.read_tags_display_mode = newVal;
+            this.iRender();
         },
         getNavigation($vm, full) {
             return getNavigation($vm, full);
@@ -1160,38 +1284,40 @@ export default {
         iRender: debounce(function (toggleChange) {
             var $vm = this;
             this.$render($vm.d_value, function(res) {
-                // render
-                let { result, srcArr } = $vm.getTagSrcArrAndRemoveTagSrc(res, 'iframe')
-                // console.log(result, srcArr)
-                $vm.d_render = result;
+                    // render
+                    let { result, srcArr } = $vm.getTagSrcArrAndRemoveTagSrc(res, 'iframe')
+                    // console.log(result, srcArr)
+                    $vm.d_render = result;
 
-                $vm.$nextTick(() => {
-                    clearTimeout($vm.timer)
-                    $vm.timer = setTimeout(() => {
-                        // console.log('数组没有数据可供修改')
-                        if (srcArr.length <= 0) return
-                        $vm.optimizationTag(srcArr, 'iframe')
-                    }, 1600)
-                })
-                // $vm.nowTime = Date.now()
+                    $vm.$nextTick(() => {
+                        clearTimeout($vm.timer)
+                        $vm.timer = setTimeout(() => {
+                            // console.log('数组没有数据可供修改')
+                            if (srcArr.length <= 0) return
+                            $vm.optimizationTag(srcArr, 'iframe')
+                        }, 1600)
+                    })
+                    // $vm.nowTime = Date.now()
 
-                // console.log($vm.$refs.vShowContent)
-                // change回调  toggleChange == false 时候触发change回调
-                if (!toggleChange)
-                {
-                    if ($vm.change) $vm.change($vm.d_value, $vm.d_render);
-                }
-                // 改变标题导航
-                if ($vm.s_navigation) getNavigation($vm, false);
-                // v-model 语法糖
-                $vm.$emit('input', $vm.d_value)
-                // 塞入编辑记录数组
-                if ($vm.d_value === $vm.d_history[$vm.d_history_index]) return
-                window.clearTimeout($vm.currentTimeout)
-                $vm.currentTimeout = setTimeout(() => {
-                    $vm.saveHistory();
-                }, 500);
-                })
+                    // console.log($vm.$refs.vShowContent)
+                    // change回调  toggleChange == false 时候触发change回调
+                    if (!toggleChange)
+                    {
+                        if ($vm.change) $vm.change($vm.d_value, $vm.d_render);
+                    }
+                    // 改变标题导航
+                    if ($vm.s_navigation) getNavigation($vm, false);
+                    // v-model 语法糖
+                    $vm.$emit('input', $vm.d_value)
+                    // 塞入编辑记录数组
+                    if ($vm.d_value === $vm.d_history[$vm.d_history_index]) return
+                    window.clearTimeout($vm.currentTimeout)
+                    $vm.currentTimeout = setTimeout(() => {
+                        $vm.saveHistory();
+                    }, 500);
+                },
+                $vm.read_tags_display_mode
+            )
             }, 500),
         // 清空上一步 下一步缓存
         $emptyHistory() {
@@ -1272,6 +1398,7 @@ export default {
     },
     computed: {
         codemirror() {
+            window.codemirror = this.$refs.myCm.codemirror
             return this.$refs.myCm.codemirror
         }
     },
@@ -1320,16 +1447,19 @@ export default {
   height: 100%;
 }
 .codemirror-editor {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 .codemirror-editor /deep/ .CodeMirror {
-    letter-spacing: .025em;
-    line-height: 1.25;
-    font-size: 18px;
-    height: 100%;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch;
+  letter-spacing: 0.025em;
+  line-height: 1.25;
+  font-size: 18px;
+  height: 100%;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, Helvetica,
+    Segoe UI, Arial, Roboto, PingFang SC, Hiragino Sans GB, Microsoft Yahei,
+    sans-serif;
 }
 </style>
 <style lang="css">
@@ -1380,16 +1510,16 @@ export default {
 }
 /* 滚动条隐藏 */
 .CodeMirror-scroll {
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 
 .CodeMirror-placeholder {
-    color: #777 !important;
+  color: #777 !important;
 }
 
 .CodeMirror-hints {
-    z-index: 99999;
+  z-index: 99999;
 }
 </style>
 
