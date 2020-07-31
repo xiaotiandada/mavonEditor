@@ -1,6 +1,6 @@
 {
   "name": "mavon-editor-matataki",
-  "version": "3.0.10",
+  "version": "3.0.12",
   "description": "Vue markdown editor",
   "main": "dist/mavon-editor.js",
   "types": "./mavon-editor.d.ts",
